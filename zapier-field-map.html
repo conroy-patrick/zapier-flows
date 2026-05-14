@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zapier Production Automations — Complete Field Map</title>
+<style>
+:root{--navy:#020434;--pink:#E60F65;--lav:#EDF0FA;--wh:#FFF;--lgr:#F4F5F9;--brd:#D8DCE8;--td:#1A1D3A;--tm:#4A4F6B;--tl:#8B91AA;--ok:#1FA971;--warn:#E89B2D;--hs:#FF7A59;--rd:#4B7BEC;--si:#2ECC71;--zp:#FF4F00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--lav);color:var(--td);font-size:14px;line-height:1.5}
+.tb{background:var(--navy);color:var(--wh);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--pink)}
+.tb-l{display:flex;align-items:center;gap:16px}
+.tb-t{font-size:18px;font-weight:600}
+.tb-s{color:rgba(255,255,255,.7);font-size:13px}
+.ctr{max-width:1440px;margin:0 auto;padding:24px 32px 48px}
+.sec{margin-bottom:32px}
+.sec-t{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--tm);margin-bottom:12px}
+.card{background:var(--wh);border:1px solid var(--brd);border-radius:10px;padding:20px 24px;box-shadow:0 1px 3px rgba(2,4,52,.04)}
+
+/* KPIs */
+.kg{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi .kl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--tl);margin-bottom:4px}
+.kpi .kv{font-size:26px;font-weight:700;color:var(--navy);line-height:1.1}
+.kpi .ks{font-size:11px;color:var(--tm);margin-top:4px}
+
+/* Narrative */
+.nar{font-size:14px;line-height:1.7;color:var(--td)}
+.nar strong{color:var(--navy)}
+
+/* Hierarchy tree */
+.tree{font-size:13px}
+.tree-node{padding:6px 0 6px 24px;border-left:2px solid var(--brd);position:relative;cursor:pointer}
+.tree-node:hover{background:rgba(230,15,101,.03)}
+.tree-node::before{content:'';position:absolute;left:-2px;top:16px;width:20px;height:0;border-top:2px solid var(--brd)}
+.tree-root{padding-left:0;border-left:none}
+.tree-root::before{display:none}
+.tn-name{font-weight:600;color:var(--navy)}
+.tn-meta{font-size:11px;color:var(--tl);margin-left:8px}
+.tn-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:3px;margin-left:6px}
+.tn-orch{background:rgba(230,15,101,.1);color:var(--pink)}
+.tn-sub{background:rgba(255,79,0,.1);color:var(--zp)}
+.tn-nest{background:rgba(75,123,236,.1);color:var(--rd)}
+.tree-children{margin-left:8px}
+
+/* Zap grid */
+.zg{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px}
+.zc{cursor:pointer;transition:all .15s}
+.zc:hover{border-color:var(--pink);transform:translateY(-1px);box-shadow:0 4px 12px rgba(2,4,52,.08)}
+.zc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px}
+.zc-n{font-size:14px;font-weight:600;color:var(--navy);line-height:1.3}
+.zc-f{font-size:10px;color:var(--tl);text-transform:uppercase;letter-spacing:.8px;margin-top:3px}
+.zc-st{font-size:9px;text-transform:uppercase;font-weight:700;letter-spacing:.6px;padding:3px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.st-prod{background:rgba(31,169,113,.12);color:var(--ok)}
+.st-sub{background:rgba(255,79,0,.1);color:var(--zp)}
+.zc-flow{display:flex;align-items:center;gap:6px;font-size:12px;margin:8px 0;flex-wrap:wrap}
+.fa{padding:3px 8px;border-radius:5px;font-weight:500;font-size:11px}
+.fa-hs{background:rgba(255,122,89,.12);color:#e05a3a}
+.fa-rd{background:rgba(75,123,236,.12);color:var(--rd)}
+.fa-si{background:rgba(46,204,113,.12);color:#1a9b55}
+.fa-zp{background:rgba(255,79,0,.1);color:var(--zp)}
+.fa-df{background:var(--lav);color:var(--navy)}
+.fl-ar{color:var(--pink);font-weight:700}
+.zc-ft{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--brd);font-size:11px;color:var(--tm)}
+.zc-fc{font-weight:600;color:var(--navy)}
+
+/* Chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{background:var(--wh);border:1px solid var(--brd);border-radius:14px;padding:5px 12px;font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--navy)}
+.chip.on{background:var(--navy);color:var(--wh);border-color:var(--navy)}
+
+/* Modal */
+.mob{position:fixed;inset:0;background:rgba(2,4,52,.6);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:20px;overflow-y:auto}
+.mob.open{display:flex}
+.mo{background:var(--wh);border-radius:12px;max-width:1300px;width:100%;box-shadow:0 20px 60px rgba(2,4,52,.4)}
+.mo-h{padding:20px 28px;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.mo-t{font-size:17px;font-weight:700;color:var(--navy)}
+.mo-s{font-size:12px;color:var(--tm);margin-top:3px}
+.mo-x{background:var(--lav);border:none;border-radius:6px;padding:8px 12px;cursor:pointer;color:var(--navy);font-size:13px;font-weight:600}
+.mo-x:hover{background:var(--brd)}
+.mo-tabs{display:flex;border-bottom:2px solid var(--brd);padding:0 28px}
+.mo-tab{padding:12px 18px;font-size:12px;font-weight:600;color:var(--tm);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;user-select:none}
+.mo-tab:hover{color:var(--navy)}
+.mo-tab.on{color:var(--pink);border-bottom-color:var(--pink)}
+.mo-b{padding:20px 28px;max-height:68vh;overflow-y:auto}
+.tc{display:none}.tc.on{display:block}
+
+/* Steps */
+.pipe{padding-left:8px}
+.stp{position:relative;padding:10px 14px 10px 34px;border-left:2px solid var(--brd);margin-left:6px}
+.stp:last-child{border-left-color:transparent}
+.stp-d{position:absolute;left:-7px;top:14px;width:12px;height:12px;border-radius:50%;border:2px solid var(--brd);background:var(--wh)}
+.sd-trigger{border-color:var(--hs);background:var(--hs)}
+.sd-filter{border-color:var(--warn);background:var(--warn)}
+.sd-formatter{border-color:var(--tm);background:var(--tm)}
+.sd-action{border-color:var(--rd);background:rgba(75,123,236,.3)}
+.sd-api{border-color:var(--hs);background:rgba(255,122,89,.3)}
+.sd-subzap{border-color:var(--zp);background:var(--zp)}
+.sd-code{border-color:#9b59b6;background:rgba(155,89,182,.3)}
+.sd-loop{border-color:var(--ok);background:rgba(31,169,113,.3)}
+.sd-path{border-color:var(--tl);background:var(--tl)}
+.sd-delay{border-color:var(--brd);background:var(--lgr)}
+.sd-return{border-color:var(--ok);background:var(--ok)}
+.stp-n{position:absolute;left:-28px;top:12px;font-size:9px;font-weight:700;color:var(--tl);width:16px;text-align:right}
+.stp-hd{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.stp-nm{font-weight:600;color:var(--navy);font-size:12px}
+.stp-bg{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:3px}
+.bg-trigger{background:rgba(255,122,89,.12);color:#e05a3a}
+.bg-filter{background:rgba(232,155,45,.12);color:var(--warn)}
+.bg-formatter{background:rgba(74,79,107,.12);color:var(--tm)}
+.bg-action{background:rgba(75,123,236,.12);color:var(--rd)}
+.bg-api{background:rgba(255,122,89,.12);color:#e05a3a}
+.bg-subzap{background:rgba(255,79,0,.12);color:var(--zp)}
+.bg-code{background:rgba(155,89,182,.12);color:#9b59b6}
+.bg-loop{background:rgba(31,169,113,.12);color:var(--ok)}
+.bg-path{background:rgba(139,145,170,.12);color:var(--tl)}
+.bg-delay{background:rgba(216,220,232,.3);color:var(--tm)}
+.bg-return{background:rgba(31,169,113,.12);color:var(--ok)}
+.stp-ap{font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:var(--lav);color:var(--navy)}
+.stp-dt{font-size:11px;color:var(--tm);margin-top:3px;line-height:1.5}
+.stp-dt code{background:var(--lav);padding:1px 4px;border-radius:2px;font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:10px;color:var(--navy)}
+.stp-io{margin-top:4px}
+.stp-ior{font-size:11px;color:var(--tm);margin-left:10px;line-height:1.5}
+.stp-ior strong{color:var(--td);font-weight:600}
+.note{background:rgba(232,155,45,.08);border-left:3px solid var(--warn);padding:8px 12px;border-radius:0 6px 6px 0;font-size:11px;color:var(--tm);margin-top:6px}
+.note strong{color:var(--td)}
+.stp-tags{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}
+.stp-tag{font-size:9px;font-family:ui-monospace,'SF Mono',Consolas,monospace;background:var(--lav);color:var(--navy);padding:1px 5px;border-radius:2px}
+
+/* Field table */
+.ft{width:100%;border-collapse:collapse;font-size:12px}
+.ft thead th{background:var(--navy);color:var(--wh);text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:600;position:sticky;top:0}
+.ft thead th:first-child{border-top-left-radius:6px}
+.ft thead th:last-child{border-top-right-radius:6px}
+.ft tbody td{padding:8px 10px;border-bottom:1px solid var(--brd);vertical-align:top}
+.ft tbody tr:nth-child(even){background:var(--lgr)}
+.ft tbody tr:hover{background:rgba(230,15,101,.05)}
+.ft .gr td{background:var(--navy);color:var(--wh);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px}
+.fp{display:inline-block;background:var(--lav);color:var(--navy);padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;font-family:ui-monospace,'SF Mono',Consolas,monospace}
+.fty{font-size:10px;color:var(--tl);text-transform:uppercase;letter-spacing:.4px}
+.ftr{font-size:11px;color:var(--tm);font-style:italic}
+.fex{font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:10px;color:var(--td);background:var(--lav);padding:1px 5px;border-radius:2px;display:inline-block;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.fst{font-size:9px;color:var(--tl);font-family:ui-monospace,'SF Mono',Consolas,monospace}
+.fsr{width:100%;padding:8px 12px;border:1px solid var(--brd);border-radius:6px;font-size:12px;margin-bottom:10px;font-family:inherit}
+.fsr:focus{outline:none;border-color:var(--pink)}
+
+/* Records summary */
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.rec-sys{border-top:3px solid var(--brd);padding-top:14px}
+.rec-sys-name{font-size:13px;font-weight:700;margin-bottom:8px}
+.rec-item{font-size:12px;color:var(--tm);padding:3px 0;padding-left:12px;border-left:2px solid var(--brd)}
+.rec-item strong{color:var(--td)}
+
+@media(max-width:900px){.kg{grid-template-columns:repeat(2,1fr)}.zg{grid-template-columns:1fr}.rec-grid{grid-template-columns:1fr}.ctr{padding:16px}.tb{padding:12px 16px;flex-direction:column;gap:8px}}
+</style>
+</head>
+<body>
+
+<header class="tb">
+  <div class="tb-l">
+    <svg width="100" height="24" viewBox="0 0 100 24" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="18" font-family="system-ui,sans-serif" font-weight="700" font-size="16" fill="#FFF" letter-spacing="1.5">BEGHOU</text>
+    </svg>
+    <div><div class="tb-t">Zapier Production Automations</div><div class="tb-s">Complete cross-system field map &amp; automation architecture</div></div>
+  </div>
+  <div class="tb-s">Updated <span id="ds"></span></div>
+</header>
+
+<div class="ctr">
+  <div class="sec"><div class="kg" id="kpis"></div></div>
+  <div class="sec"><div class="card nar" id="nar"></div></div>
+  <div class="sec">
+    <div class="sec-t">Automation Architecture — Call Hierarchy</div>
+    <div class="card" id="tree-wrap"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">Records Created Per System (Single Deal Close)</div>
+    <div class="card"><div class="rec-grid" id="rec-grid"></div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">System Map</div>
+    <div class="card" style="overflow-x:auto">
+      <svg id="smap" viewBox="0 0 1100 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;min-height:280px">
+        <defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E60F65"/></marker></defs>
+      </svg>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t">All Automations — Click for step pipeline + field map</div>
+    <div class="chips" id="chips"></div>
+    <div class="zg" id="zg"></div>
+  </div>
+</div>
+
+<div class="mob" id="mob">
+  <div class="mo">
+    <div class="mo-h"><div><div class="mo-t" id="mt"></div><div class="mo-s" id="ms"></div></div><button class="mo-x" id="mx">Close ✕</button></div>
+    <div class="mo-tabs" id="mtabs"></div>
+    <div class="mo-b" id="mbody"></div>
+  </div>
+</div>
+
+<script>
+/* === HELPERS === */
+function esc(s){return s||'';}
+function acls(a){return a==='HubSpot'?'fa-hs':a==='Ruddr'?'fa-rd':a==='Sage Intacct'?'fa-si':a==='Zapier'?'fa-zp':'fa-df';}
+
+/* ============================================================
+   ZAP DATA — ALL 10 PRODUCTION ZAPS
+   ============================================================ */
+var Z=[
+
+// === ZAP 1: ORCHESTRATOR ===
+{id:'z1',name:'HubSpot Deal Data → Intacct Contracts',folder:'Finance Automation',role:'orchestrator',
+triggerApp:'HubSpot',destApps:['Ruddr','Sage Intacct'],
+replace:'Finance Ops manually creates customer records in Sage Intacct, contract + line items, and parallel Ruddr client/project/tasks. ~25 min/deal across 3 systems.',
+hrs:20,runs:48,
+parent:null,calledBy:null,
+steps:[
+  {n:1,t:'trigger',a:'HubSpot',nm:'Deal Property Change (dealstage)',dt:'Fires on <code>dealstage</code> change. Retrieves 8 properties.',tags:['hubspotownerid','hs_primary_associated_company','project_start_date','project_end_date','hs_num_of_associated_line_items','activeproject','primary_company','company_owner']},
+  {n:2,t:'filter',nm:'Line Items > 0',dt:'Halts if <code>hs_num_of_associated_line_items = 0</code>'},
+  {n:3,t:'filter',nm:'Deal Stage = Closing or Closed Won',dt:'<code>dealstage = 172201830</code> (Closed Won) or <code>172201829</code> (Closing)'},
+  {n:4,t:'formatter',nm:'Format Start Date',dt:'<code>project_start_date</code> epoch → <code>YYYY-MM-DD</code> (UTC)'},
+  {n:5,t:'formatter',nm:'Format End Date',dt:'<code>project_end_date</code> epoch → <code>YYYY-MM-DD</code> (UTC)'},
+  {n:6,t:'api',a:'HubSpot',nm:'GET Associated Line Items',dt:'<code>GET /crm/v4/objects/deals/{id}/associations/contacts</code>',note:'URL references contacts endpoint — possible mislabel. Line items retrieved via Sub-Zap step 10.'},
+  {n:7,t:'api',a:'HubSpot',nm:'GET Associated Contact',dt:'Returns contact IDs associated with deal.'},
+  {n:8,t:'formatter',nm:'Select First Contact',dt:'Pick-from-list: first contact ID from step 7.'},
+  {n:9,t:'action',a:'HubSpot',nm:'Get Contact by ID',dt:'Full contact record (email, first/last name).'},
+  {n:10,t:'subzap',nm:'Get Line Items',sz:'[Production] Get Line Items',dt:'Retrieves + structures all deal line items.',io:[{f:'deal_id_required',s:'Deal ID (step 1)'}]},
+  {n:11,t:'action',a:'HubSpot',nm:'Get Company by ID',dt:'Uses <code>hs_primary_associated_company</code>. Returns company name + ID.'},
+  {n:12,t:'subzap',nm:'Find/Create Ruddr Client',sz:'[Production] Find/Create Ruddr Client',dt:'Looks up client in Ruddr; creates if not found.',io:[{f:'client_email',s:'Contact email (step 9)'},{f:'client_name',s:'Contact name (step 9)'},{f:'customer_name',s:'Company name (step 11)'},{f:'deal_owner',s:'hubspotownerid (step 1)'}]},
+  {n:13,t:'subzap',nm:'Create Ruddr Projects/Tasks',sz:'[Production] Create Ruddr Projects',dt:'Creates project + tasks per line item in Ruddr.',io:[{f:'ruddr_client_id_required',s:'Client ID (step 12)'},{f:'hubspot_deal_name',s:'Deal name (step 1)'},{f:'hubspot_deal_id',s:'Deal ID (step 1)'},{f:'line_items_data',s:'Line items JSON (step 10)'}]},
+  {n:14,t:'filter',nm:'Closed Won Only',dt:'Only proceeds to Intacct if <code>dealstage = 172201830</code>. "Closing" deals get Ruddr only.'},
+  {n:15,t:'subzap',nm:'Find/Create Intacct Customer',sz:'[Production] Find/Create Intacct Customer',dt:'Looks up customer in Sage Intacct; creates if not found.',io:[{f:'hubspot_client_id',s:'Company ID (step 11)'},{f:'company_id_required',s:'hs_primary_associated_company (step 1)'},{f:'client_code',s:'Ruddr client code (step 12)'}]},
+  {n:16,t:'subzap',nm:'Create Intacct Contract + Lines',sz:'[Production] Create Intacct Contract + Contract Lines',dt:'Creates contract header + per-line contract lines in Sage Intacct.',io:[{f:'line_item_data',s:'Line items JSON (step 10)'},{f:'intacct_customer_key',s:'Customer key (step 15)'},{f:'hubspot_deal_id',s:'Deal ID (step 1)'},{f:'deal_end_date',s:'Formatted date (step 5)'},{f:'deal_start_date',s:'Formatted date (step 4)'},{f:'intacct_customer_id',s:'Customer ID (step 15)'},{f:'hubspot_deal_name',s:'Deal name (step 1)'}]}
+],
+fm:[
+  {g:'HubSpot Deal Properties (Trigger)'},
+  {s:{y:'HubSpot',f:'dealstage'},tp:'enum',tx:'Filter gate — Closed Won / Closing',d:{y:'Zapier',f:'Filter steps 3 & 14'},ex:'172201830',st:'1→3,14'},
+  {s:{y:'HubSpot',f:'hubspotownerid'},tp:'id',tx:'Passed as deal_owner',d:{y:'Ruddr',f:'deal_owner'},ex:'284619753',st:'1→12'},
+  {s:{y:'HubSpot',f:'hs_primary_associated_company'},tp:'id',tx:'Company lookup + Intacct pass',d:{y:'Sage Intacct',f:'company_id_required'},ex:'19847562301',st:'1→11→15'},
+  {s:{y:'HubSpot',f:'hs_num_of_associated_line_items'},tp:'number',tx:'Filter gate >0',d:{y:'Zapier',f:'Filter step 2'},ex:'3',st:'1→2'},
+  {s:{y:'HubSpot',f:'project_start_date'},tp:'date',tx:'Epoch→YYYY-MM-DD (UTC)',d:{y:'Sage Intacct',f:'deal_start_date'},ex:'2025-10-01',st:'1→4→16'},
+  {s:{y:'HubSpot',f:'project_end_date'},tp:'date',tx:'Epoch→YYYY-MM-DD (UTC)',d:{y:'Sage Intacct',f:'deal_end_date'},ex:'2026-03-31',st:'1→5→16'},
+  {s:{y:'HubSpot',f:'dealname'},tp:'text',tx:'Direct to Ruddr + Intacct',d:{y:'Ruddr+Intacct',f:'hubspot_deal_name'},ex:'Acme Pharma — Q3 IC Comp',st:'1→13,16'},
+  {s:{y:'HubSpot',f:'hs_object_id'},tp:'id',tx:'Direct to 3 sub-Zaps',d:{y:'Ruddr+Intacct',f:'deal_id / deal_id_required'},ex:'28471956302',st:'1→10,13,16'},
+  {g:'HubSpot Contact (Steps 7–9)'},
+  {s:{y:'HubSpot',f:'contact.email'},tp:'email',tx:'Via association lookup',d:{y:'Ruddr',f:'client_email'},ex:'j.williams@acmepharma.com',st:'9→12'},
+  {s:{y:'HubSpot',f:'contact.firstname+lastname'},tp:'text',tx:'Concatenated',d:{y:'Ruddr',f:'client_name'},ex:'Jennifer Williams',st:'9→12'},
+  {g:'HubSpot Company (Step 11)'},
+  {s:{y:'HubSpot',f:'company.name'},tp:'text',tx:'Via company ID lookup',d:{y:'Ruddr',f:'customer_name'},ex:'Acme Pharma, Inc.',st:'11→12'},
+  {s:{y:'HubSpot',f:'company.id'},tp:'id',tx:'For Intacct customer lookup',d:{y:'Sage Intacct',f:'hubspot_client_id'},ex:'19847562301',st:'11→15'},
+  {g:'Line Items (Sub-Zap Step 10)'},
+  {s:{y:'HubSpot',f:'line_items (JSON)'},tp:'json',tx:'Sub-Zap retrieves + structures',d:{y:'Ruddr+Intacct',f:'line_items_data'},ex:'[{sku:"ARC-IC",amt:85000}]',st:'10→13,16'},
+  {g:'Ruddr Outputs → Downstream'},
+  {s:{y:'Ruddr',f:'client_id'},tp:'id',tx:'From Find/Create Client',d:{y:'Ruddr',f:'ruddr_client_id_required'},ex:'CLT-00842',st:'12→13'},
+  {s:{y:'Ruddr',f:'client_code'},tp:'text',tx:'From Find/Create Client → Intacct',d:{y:'Sage Intacct',f:'client_code'},ex:'ACME-PHARMA',st:'12→15'},
+  {g:'Intacct Outputs → Contract'},
+  {s:{y:'Sage Intacct',f:'customer_key'},tp:'id',tx:'From Find/Create Customer',d:{y:'Sage Intacct',f:'intacct_customer_key'},ex:'CUST-7291',st:'15→16'},
+  {s:{y:'Sage Intacct',f:'customer_id'},tp:'id',tx:'From Find/Create Customer',d:{y:'Sage Intacct',f:'intacct_customer_id'},ex:'C-00482',st:'15→16'}
+]},
+
+// === ZAP 2: GET LINE ITEMS ===
+{id:'z2',name:'Get Line Items',folder:'Finance Automation',role:'sub-zap',
+triggerApp:'Zapier',destApps:['HubSpot'],parent:'z1',calledBy:'Orchestrator step 10',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Input: <code>deal_id_required</code>'},
+  {n:2,t:'api',a:'HubSpot',nm:'GET Line Items from Deal',dt:'<code>GET /crm/v4/objects/deals/{deal_id}/associations/line_items?limit=500</code>'},
+  {n:3,t:'code',nm:'Process Line Item Data',dt:'Parses association response into structured array. Outputs per item: id, name, qty, price, amount, description, hs_sku, duration, timeline_months, billing frequency.'},
+  {n:4,t:'return',nm:'Return line_item_data',dt:'Returns <code>raw_json</code> — full structured line items as JSON string.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'deal_id_required'},tp:'id',tx:'From parent orchestrator',d:{y:'HubSpot',f:'API path param'},ex:'28471956302',st:'1→2'},
+  {s:{y:'HubSpot',f:'line_items[]'},tp:'json',tx:'Parsed into structured array',d:{y:'Zapier',f:'line_item_data (return)'},ex:'[{id,name,sku,amount,timeline}]',st:'2→3→4'}
+]},
+
+// === ZAP 3: FIND/CREATE RUDDR CLIENT ===
+{id:'z3',name:'Find/Create Ruddr Client',folder:'Finance Automation',role:'sub-zap',
+triggerApp:'Zapier',destApps:['HubSpot','Ruddr'],parent:'z1',calledBy:'Orchestrator step 12',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: <code>deal_owner</code>, <code>customer_name</code>, <code>client_email</code>, <code>client_name</code>'},
+  {n:2,t:'action',a:'HubSpot',nm:'Get Owner by ID',dt:'Looks up HubSpot owner → gets email for Ruddr member search.'},
+  {n:3,t:'action',a:'Ruddr',nm:'Search Member by Email',dt:'Finds Ruddr member matching HubSpot owner email.'},
+  {n:4,t:'action',a:'Ruddr',nm:'Search Client by Name',dt:'Searches for existing Ruddr client by <code>customer_name</code>.'},
+  {n:5,t:'path',nm:'Path A: Client Not Found → Create',dt:'If search found = false → creates new Ruddr client.',io:[{f:'name',s:'customer_name (input)'},{f:'emails',s:'client_email (input)'},{f:'ownerId',s:'Ruddr member ID (step 3)'}]},
+  {n:6,t:'path',nm:'Path B: Client Found → Return Existing',dt:'Fallback: returns existing client ID + code from step 4.'},
+  {n:7,t:'return',nm:'Return rudder_client_id + client_code',dt:'Returns client ID and code to parent Zap.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'deal_owner'},tp:'id',tx:'Owner ID → HubSpot lookup → email',d:{y:'Ruddr',f:'member search (email)'},ex:'284619753',st:'1→2→3'},
+  {s:{y:'Zapier',f:'customer_name'},tp:'text',tx:'Direct to Ruddr client search/create',d:{y:'Ruddr',f:'client.name'},ex:'Acme Pharma, Inc.',st:'1→4,5'},
+  {s:{y:'Zapier',f:'client_email'},tp:'email',tx:'Used in Ruddr client creation',d:{y:'Ruddr',f:'client.emails[]'},ex:'j.williams@acmepharma.com',st:'1→5'},
+  {s:{y:'HubSpot',f:'owner.email'},tp:'email',tx:'Owner email → Ruddr member lookup',d:{y:'Ruddr',f:'member search key'},ex:'pconroy@beghou.com',st:'2→3'},
+  {s:{y:'Ruddr',f:'client.id'},tp:'id',tx:'Returned to parent',d:{y:'Zapier',f:'rudder_client_id (return)'},ex:'CLT-00842',st:'5/6→7'},
+  {s:{y:'Ruddr',f:'client.code'},tp:'text',tx:'Returned to parent',d:{y:'Zapier',f:'client_code (return)'},ex:'ACME-PHARMA',st:'5/6→7'}
+]},
+
+// === ZAP 4: CREATE RUDDR PROJECTS ===
+{id:'z4',name:'Create Ruddr Projects',folder:'Finance Automation',role:'sub-zap',
+triggerApp:'Zapier',destApps:['HubSpot','Ruddr'],parent:'z1',calledBy:'Orchestrator step 13',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: <code>line_items_data</code>, <code>hubspot_deal_id</code>, <code>hubspot_deal_name</code>, <code>rudder_client_id_required</code>'},
+  {n:2,t:'code',nm:'Parse Line Items into Loop Arrays',dt:'Splits JSON into parallel arrays: names, skus, ids, timeline, amount, sku_description.'},
+  {n:3,t:'action',a:'HubSpot',nm:'Get Deal',dt:'Retrieves deal dates + owner for project setup.'},
+  {n:4,t:'action',a:'HubSpot',nm:'Get Owner',dt:'Gets owner email for Ruddr member search.'},
+  {n:5,t:'action',a:'Ruddr',nm:'Search Member by Email',dt:'Finds Ruddr member → used as projectAdminId.'},
+  {n:6,t:'loop',nm:'Loop Per Line Item',dt:'Iterates through each line item. Per iteration:'},
+  {n:'6.1',t:'code',nm:'Calculate End Date',dt:'Uses start_date + timeline to compute project end date.'},
+  {n:'6.2',t:'code',nm:'Billing Type Map',dt:'Maps HubSpot SKU → Ruddr billing type ID.'},
+  {n:'6.3',t:'filter',nm:'Skip PT / L: SKUs',dt:'Stops iteration for pass-through and licensing SKUs.'},
+  {n:'6.4',t:'delay',nm:'Delay Queue',dt:'Rate limiting by deal ID to prevent API conflicts.'},
+  {n:'6.5',t:'action',a:'HubSpot',nm:'Get Line Item Detail',dt:'Retrieves <code>ruddr_project_id</code> and billing fields.'},
+  {n:'6.6',t:'action',a:'Ruddr',nm:'Create Project',dt:'Creates project with clientId, billingType, projectAdmin, dates, budget.',io:[{f:'clientId',s:'ruddr_client_id (input)'},{f:'billingTypeId',s:'Code step (6.2)'},{f:'projectAdminId',s:'Ruddr member (step 5)'},{f:'start/end',s:'Deal dates + calculated'},{f:'budgetServiceRevenue',s:'Line item amount'}]},
+  {n:'6.7',t:'action',a:'HubSpot',nm:'Update Line Item (writeback)',dt:'Writes <code>ruddr_project_id</code> back to HubSpot line item.'},
+  {n:'6.8',t:'code',nm:'Bucket Resolution',dt:'Maps SKU → bucket type (ARMADA_MAINTENANCE, ARC_DEPLOYMENT, BI_MAINTENANCE, etc.)'},
+  {n:'6.9',t:'path',nm:'7 Bucket Paths → Create Tasks',dt:'Each bucket creates 3–16 tasks specific to that service type. At last iteration, calls Find/Create Allocation Line Item sub-Zap.'},
+  {n:7,t:'return',nm:'Return created=true',dt:'Returns to parent.'}
+],
+fm:[
+  {g:'Inputs → Ruddr Project'},
+  {s:{y:'Zapier',f:'line_items_data'},tp:'json',tx:'Parsed into loop arrays',d:{y:'Ruddr',f:'project per line item'},ex:'[{sku,name,amount}]',st:'1→2→6'},
+  {s:{y:'Zapier',f:'ruddr_client_id_required'},tp:'id',tx:'Direct to Ruddr project',d:{y:'Ruddr',f:'project.clientId'},ex:'CLT-00842',st:'1→6.6'},
+  {s:{y:'HubSpot',f:'deal.project_start_date'},tp:'date',tx:'Base date + timeline calc',d:{y:'Ruddr',f:'project.start / project.end'},ex:'2025-10-01',st:'3→6.1→6.6'},
+  {s:{y:'HubSpot',f:'owner.email'},tp:'email',tx:'Owner → Ruddr member → projectAdminId',d:{y:'Ruddr',f:'project.projectAdminId'},ex:'pconroy@beghou.com',st:'4→5→6.6'},
+  {s:{y:'HubSpot',f:'line_item.hs_sku'},tp:'text',tx:'SKU → billing type + bucket',d:{y:'Ruddr',f:'billingTypeId + task template'},ex:'ARC:DE:MT',st:'6.2,6.8'},
+  {g:'Ruddr → HubSpot Writeback'},
+  {s:{y:'Ruddr',f:'project.code'},tp:'text',tx:'Written back to HubSpot line item',d:{y:'HubSpot',f:'line_item.ruddr_project_id'},ex:'PRJ-4821',st:'6.6→6.7'}
+]},
+
+// === ZAP 5: FIND/CREATE INTACCT CUSTOMER ===
+{id:'z5',name:'Find/Create Intacct Customer',folder:'Finance Automation',role:'sub-zap',
+triggerApp:'Zapier',destApps:['HubSpot','Sage Intacct'],parent:'z1',calledBy:'Orchestrator step 15',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: <code>client_code</code>, <code>hubspot_client_id</code>, <code>company_id_required</code>'},
+  {n:2,t:'action',a:'HubSpot',nm:'Get Company by ID',dt:'Retrieves company name from <code>company_id_required</code>.'},
+  {n:3,t:'action',a:'Sage Intacct',nm:'Search Customer',dt:'Searches by <code>CUSTOMERID = client_code</code>.'},
+  {n:4,t:'path',nm:'Path A: Not Found → Create Customer',dt:'Creates customer in Intacct with company name + client_code as ID.',io:[{f:'name',s:'Company name (step 2)'},{f:'id',s:'client_code (input)'}]},
+  {n:5,t:'path',nm:'Path B: Found → Return Existing',dt:'Returns existing CUSTOMERID + RECORDNO.'},
+  {n:6,t:'return',nm:'Return sage_customer_key + sage_customer_id',dt:'Returns customer key and ID to parent.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'client_code'},tp:'text',tx:'Used as Intacct CUSTOMERID search key',d:{y:'Sage Intacct',f:'CUSTOMERID'},ex:'ACME-PHARMA',st:'1→3'},
+  {s:{y:'Zapier',f:'company_id_required'},tp:'id',tx:'Gets company name from HubSpot',d:{y:'HubSpot',f:'company lookup ID'},ex:'19847562301',st:'1→2'},
+  {s:{y:'HubSpot',f:'company.name'},tp:'text',tx:'Used as Intacct customer name',d:{y:'Sage Intacct',f:'customer.NAME'},ex:'Acme Pharma, Inc.',st:'2→4'},
+  {s:{y:'Sage Intacct',f:'customer.key'},tp:'id',tx:'Returned to parent',d:{y:'Zapier',f:'sagecustomerkey (return)'},ex:'CUST-7291',st:'4/5→6'},
+  {s:{y:'Sage Intacct',f:'customer.CUSTOMERID'},tp:'id',tx:'Returned to parent',d:{y:'Zapier',f:'sagecustomerid (return)'},ex:'C-00482',st:'4/5→6'}
+]},
+
+// === ZAP 6: CREATE INTACCT CONTRACT + CONTRACT LINES ===
+{id:'z6',name:'Create Intacct Contract + Contract Lines',folder:'Finance Automation',role:'sub-zap',
+triggerApp:'Zapier',destApps:['HubSpot','Ruddr','Sage Intacct'],parent:'z1',calledBy:'Orchestrator step 16',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'8 inputs: line_item_data, hubspot_payment_term, intacct_customer_key/id, deal dates, deal ID/name.'},
+  {n:2,t:'code',nm:'Default Payment Term',dt:'Defaults to <code>24|Net 30</code> if null.'},
+  {n:3,t:'formatter',nm:'Format Today\'s Date',dt:'UTC → America/New_York → <code>YYYY-MM-DD</code>. Used as CREATED_ON.'},
+  {n:4,t:'action',a:'HubSpot',nm:'Get Deal by ID',dt:'Retrieves deal record for additional properties.'},
+  {n:5,t:'code',nm:'Expand Data + Calculate Billing',dt:'Processes line items into billing structures: cost_per_period, billing_template_id, revenue_template_id, billing_frequency_id.'},
+  {n:6,t:'formatter',nm:'Format Start/End Dates',dt:'Ensures <code>YYYY-MM-DD</code> format for Intacct.'},
+  {n:7,t:'action',a:'Sage Intacct',nm:'Find/Create Contract',dt:'Creates contract header with customer, dates, billing frequency, payment terms, entity.',io:[{f:'name',s:'hubspot_deal_name'},{f:'contract_id',s:'hubspot_deal_id'},{f:'customer_key',s:'intacct_customer_key'},{f:'paymentTerm_key',s:'Code step (2)'},{f:'startDate/endDate',s:'Input dates'},{f:'nsp_HUBSPOT_ID',s:'hubspot_deal_id'},{f:'nsp_CREATED_ON',s:'Formatted today (3)'}]},
+  {n:8,t:'loop',nm:'Loop Per Line Item',dt:'Iterates through expanded line items. Per iteration:'},
+  {n:'8.1',t:'action',a:'HubSpot',nm:'Get Line Item by ID',dt:'Gets hs_sku, timeline_months, ruddr_project_id.'},
+  {n:'8.2',t:'code',nm:'Calculate Cost Per Month',dt:'Derives monthly cost from total + timeline.'},
+  {n:'8.3',t:'action',a:'Sage Intacct',nm:'Find Item by SKU',dt:'Looks up Intacct item using <code>hs_sku</code>.'},
+  {n:'8.4',t:'action',a:'Ruddr',nm:'List Projects by Code',dt:'Finds Ruddr project by <code>ruddr_project_id</code>.'},
+  {n:'8.5',t:'action',a:'Sage Intacct',nm:'Find/Create Project',dt:'Creates Intacct project linked to Ruddr project + contract.',io:[{f:'projectId',s:'Ruddr project code'},{f:'name',s:'deal_name + item_name + description'},{f:'customerKey',s:'intacct_customer_key'},{f:'nsp_RUDDR_PROJECT_ID',s:'Ruddr project ID'},{f:'nsp_HUBSPOT_ID',s:'hubspot_deal_id'},{f:'nsp_ASSOCIATED_CONTRACT',s:'Contract ID (step 7)'}]},
+  {n:'8.6',t:'action',a:'Sage Intacct',nm:'Create Contract Line',dt:'Creates contract line with item, project, billing, revenue template.',io:[{f:'contract_key',s:'Contract key (step 7)'},{f:'item_key',s:'Intacct item (8.3)'},{f:'project_key',s:'Intacct project (8.5)'},{f:'billing_flatFixedAmount',s:'Cost/month (8.2)'},{f:'billing_template_key',s:'From line item data'},{f:'revenue_template_key',s:'From line item data'},{f:'nsp_HUBSPOT_LINE_ID',s:'HubSpot line item ID'}]},
+  {n:'8.7',t:'path',nm:'PF:TM → Billable Tasks / Other → Non-Billable Tasks',dt:'Calls Create Billable or Non-Billable Project Tasks sub-Zap.'},
+  {n:'8.8',t:'path',nm:'Fallback: Duplicate Check',dt:'Finds existing contract line by HUBSPOT_LINE_ID. Creates only if not found.'},
+  {n:9,t:'return',nm:'Return finished=true',dt:'Returns to parent.'}
+],
+fm:[
+  {g:'Inputs → Contract Header (Step 7)'},
+  {s:{y:'Zapier',f:'hubspot_deal_name'},tp:'text',tx:'Contract name',d:{y:'Sage Intacct',f:'contract.name'},ex:'Acme Pharma — Q3 IC Comp',st:'1→7'},
+  {s:{y:'Zapier',f:'hubspot_deal_id'},tp:'id',tx:'Contract ID + HUBSPOT_ID custom field',d:{y:'Sage Intacct',f:'contract.contract_id + nsp_HUBSPOT_ID'},ex:'28471956302',st:'1→7'},
+  {s:{y:'Zapier',f:'intacct_customer_key'},tp:'id',tx:'Contract customer reference',d:{y:'Sage Intacct',f:'contract.customer_key'},ex:'CUST-7291',st:'1→7'},
+  {s:{y:'Zapier',f:'deal_start_date'},tp:'date',tx:'Contract start',d:{y:'Sage Intacct',f:'contract.startDate'},ex:'2025-10-01',st:'1→7'},
+  {s:{y:'Zapier',f:'deal_end_date'},tp:'date',tx:'Contract end',d:{y:'Sage Intacct',f:'contract.endDate'},ex:'2026-03-31',st:'1→7'},
+  {s:{y:'Zapier',f:'hubspot_payment_term'},tp:'text',tx:'Defaulted to Net 30 if null',d:{y:'Sage Intacct',f:'contract.paymentTerm_key'},ex:'24|Net 30',st:'1→2→7'},
+  {g:'Per Line Item → Contract Line (Step 8)'},
+  {s:{y:'HubSpot',f:'line_item.hs_sku'},tp:'text',tx:'Intacct item lookup key',d:{y:'Sage Intacct',f:'item search (ITEMID)'},ex:'ARC:IC:MT',st:'8.1→8.3'},
+  {s:{y:'HubSpot',f:'line_item.timeline_months'},tp:'number',tx:'Cost/month calculation',d:{y:'Sage Intacct',f:'contractline.billing.flatFixedAmount'},ex:'6',st:'8.1→8.2→8.6'},
+  {s:{y:'HubSpot',f:'line_item.ruddr_project_id'},tp:'text',tx:'Ruddr→Intacct project linking',d:{y:'Sage Intacct',f:'project.nsp_RUDDR_PROJECT_ID'},ex:'PRJ-4821',st:'8.1→8.4→8.5'},
+  {s:{y:'Ruddr',f:'project.code'},tp:'text',tx:'Used as Intacct projectId',d:{y:'Sage Intacct',f:'project.projectId'},ex:'PRJ-4821',st:'8.4→8.5'},
+  {s:{y:'Sage Intacct',f:'contract.key'},tp:'id',tx:'Links contract line to header',d:{y:'Sage Intacct',f:'contractline.contract_key'},ex:'CTR-9182',st:'7→8.6'},
+  {s:{y:'Sage Intacct',f:'item.key'},tp:'id',tx:'Item reference on contract line',d:{y:'Sage Intacct',f:'contractline.item_key'},ex:'ITEM-482',st:'8.3→8.6'},
+  {s:{y:'Sage Intacct',f:'project.key'},tp:'id',tx:'Project reference on contract line',d:{y:'Sage Intacct',f:'contractline.project_key'},ex:'PROJ-881',st:'8.5→8.6'}
+]},
+
+// === ZAP 7: FIND/CREATE CONTACT INTACCT ===
+{id:'z7',name:'Find/Create Contact Intacct',folder:'Finance Automation',role:'sub-zap',
+triggerApp:'Zapier',destApps:['HubSpot','Sage Intacct'],parent:null,calledBy:'Standalone / other workflow',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Input: <code>associated_contact_id</code>'},
+  {n:2,t:'formatter',nm:'Pick First Contact ID',dt:'Selects first ID from list.'},
+  {n:3,t:'action',a:'HubSpot',nm:'Get Contact by ID',dt:'Full contact: email, name, phone, address, etc.'},
+  {n:4,t:'action',a:'Sage Intacct',nm:'Find Contact by Email',dt:'Searches active contacts in Intacct.'},
+  {n:5,t:'path',nm:'Path A: Found → Return Key',dt:'Returns existing <code>sage_contact_key</code>.'},
+  {n:6,t:'path',nm:'Path B: Not Found → Create Contact',dt:'Creates full Intacct contact with all HubSpot fields.',io:[{f:'contactName',s:'firstname + lastname'},{f:'primaryEmailAddress',s:'email'},{f:'primaryPhoneNo',s:'phone'},{f:'cellularPhoneNo',s:'mobilephone'},{f:'faxNo',s:'fax'},{f:'addressLine1',s:'address'},{f:'city/state/zip/country',s:'HubSpot contact fields'},{f:'primaryUrl',s:'website'}]},
+  {n:7,t:'return',nm:'Return sage_contact_key',dt:'Returns contact key to parent.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'associated_contact_id'},tp:'id',tx:'Passed from parent → HubSpot lookup',d:{y:'HubSpot',f:'contact lookup ID'},ex:'48291034',st:'1→2→3'},
+  {s:{y:'HubSpot',f:'contact.email'},tp:'email',tx:'Intacct contact search + creation',d:{y:'Sage Intacct',f:'contact.primaryEmailAddress'},ex:'j.williams@acmepharma.com',st:'3→4,6'},
+  {s:{y:'HubSpot',f:'contact.firstname'},tp:'text',tx:'Contact name fields',d:{y:'Sage Intacct',f:'contact.firstName'},ex:'Jennifer',st:'3→6'},
+  {s:{y:'HubSpot',f:'contact.lastname'},tp:'text',tx:'Contact name fields',d:{y:'Sage Intacct',f:'contact.lastName'},ex:'Williams',st:'3→6'},
+  {s:{y:'HubSpot',f:'contact.phone'},tp:'text',tx:'Direct',d:{y:'Sage Intacct',f:'contact.primaryPhoneNo'},ex:'617-555-1234',st:'3→6'},
+  {s:{y:'HubSpot',f:'contact.mobilephone'},tp:'text',tx:'Direct',d:{y:'Sage Intacct',f:'contact.cellularPhoneNo'},ex:'617-555-5678',st:'3→6'},
+  {s:{y:'HubSpot',f:'contact.address'},tp:'text',tx:'Full address block',d:{y:'Sage Intacct',f:'contact.addressLine1 + city/state/zip/country'},ex:'100 Main St, Boston MA 02101',st:'3→6'},
+  {s:{y:'HubSpot',f:'contact.website'},tp:'url',tx:'Direct',d:{y:'Sage Intacct',f:'contact.primaryUrl'},ex:'acmepharma.com',st:'3→6'}
+]},
+
+// === ZAP 8: BILLABLE PROJECT TASKS ===
+{id:'z8',name:'Create Intacct Billable Project Tasks',folder:'Finance Automation',role:'nested',
+triggerApp:'Zapier',destApps:['Sage Intacct'],parent:'z6',calledBy:'Contract Lines step 22 (PF:TM SKUs)',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: <code>project_key</code>, <code>sku</code>, <code>project_start_date</code>, <code>project_end_date</code>'},
+  {n:2,t:'action',a:'Sage Intacct',nm:'Create Tasks Bulk (Group 1)',dt:'5 tasks: Project Management, Team Check-In, Internal Meeting Other, External Meeting Client, External Meeting Vendor'},
+  {n:3,t:'action',a:'Sage Intacct',nm:'Create Tasks Bulk (Group 2)',dt:'5 tasks: Requirements Gathering, Solution Design, Core Project Analytics, Ad Hoc Support, Storytelling & Exec Materials'},
+  {n:4,t:'action',a:'Sage Intacct',nm:'Create Tasks Bulk (Group 3)',dt:'6 tasks: Issue Resolution, Internal Review, Client Review & Revisions, Documentation, Knowledge Transfer, Client Immersion'},
+  {n:5,t:'return',nm:'Return',dt:'Returns to parent.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'project_key'},tp:'id',tx:'Target project for task creation',d:{y:'Sage Intacct',f:'task.projectKey'},ex:'PROJ-881',st:'1→2,3,4'},
+  {s:{y:'Zapier',f:'project_start_date'},tp:'date',tx:'Task dates',d:{y:'Sage Intacct',f:'task.plannedStartDate'},ex:'2025-10-01',st:'1→2,3,4'},
+  {s:{y:'Zapier',f:'project_end_date'},tp:'date',tx:'Task dates',d:{y:'Sage Intacct',f:'task.plannedEndDate'},ex:'2026-03-31',st:'1→2,3,4'}
+]},
+
+// === ZAP 9: NON-BILLABLE PROJECT TASKS ===
+{id:'z9',name:'Create Intacct Non-Billable Project Tasks',folder:'Finance Automation',role:'nested',
+triggerApp:'Zapier',destApps:['Ruddr','Sage Intacct'],parent:'z6',calledBy:'Contract Lines step 23 (non-PF:TM)',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: <code>ruddr_project_id</code>, <code>project_key</code>, <code>sku</code>, dates'},
+  {n:2,t:'action',a:'Ruddr',nm:'List Tasks by Project',dt:'Gets existing Ruddr tasks for this project.'},
+  {n:3,t:'code',nm:'Bucket Resolution',dt:'Maps SKU → bucket (ARMADA_MAINTENANCE, ARC_DEPLOYMENT, BI_MAINTENANCE, etc.)'},
+  {n:4,t:'path',nm:'7 Bucket Paths + PF:FF + Fallback',dt:'Each bucket creates specific non-billable tasks with Ruddr task ID linking. Tasks vary from 3–6 per bucket: CDW data layers, config, data process, QA/QC, dashboards, etc.'},
+  {n:5,t:'return',nm:'Return',dt:'Returns to parent.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'ruddr_project_id'},tp:'id',tx:'Ruddr task lookup for linking',d:{y:'Ruddr',f:'task list by project'},ex:'PRJ-4821',st:'1→2'},
+  {s:{y:'Zapier',f:'project_key'},tp:'id',tx:'Intacct project for task creation',d:{y:'Sage Intacct',f:'task.projectKey'},ex:'PROJ-881',st:'1→4'},
+  {s:{y:'Zapier',f:'sku'},tp:'text',tx:'Bucket resolution → task template',d:{y:'Sage Intacct',f:'task template selection'},ex:'ARC:DE:MT',st:'1→3→4'},
+  {s:{y:'Ruddr',f:'task.ids'},tp:'id',tx:'Linked as nsp_RUDDR_TASK_IDS',d:{y:'Sage Intacct',f:'task.nsp_RUDDRTASKIDS'},ex:'TSK-119,TSK-120',st:'2→4'}
+]},
+
+// === ZAP 10: FIND/CREATE ALLOCATION LINE ITEM ===
+{id:'z10',name:'Find/Create Allocation Line Item',folder:'Finance Automation',role:'nested',
+triggerApp:'Zapier',destApps:['HubSpot','Ruddr'],parent:'z4',calledBy:'Ruddr Projects (per bucket, last iteration)',
+steps:[
+  {n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: <code>ruddr_project_admin</code>, <code>billing_type</code>, <code>ruddr_client_id</code>, <code>deal_id</code>'},
+  {n:2,t:'action',a:'HubSpot',nm:'Get Deal by ID',dt:'Gets dates + <code>ruddr_project_code</code>.'},
+  {n:3,t:'path',nm:'Path A: No Project Code → Create Allocation Project',dt:'Creates Ruddr project "{dealname} - Allocations" + task, then writes back to HubSpot.',io:[{f:'name',s:'dealname + " - Allocations"'},{f:'clientId',s:'ruddr_client_id'},{f:'billingTypeId',s:'billing_type'},{f:'projectAdminId',s:'ruddr_project_admin'},{f:'start/end',s:'Deal dates'}]},
+  {n:4,t:'action',a:'HubSpot',nm:'Update Deal (writeback)',dt:'Writes <code>ruddr_project_code</code> back to HubSpot deal.'},
+  {n:5,t:'path',nm:'Path B: Project Exists → Skip',dt:'If ruddr_project_code already exists, returns immediately.'},
+  {n:6,t:'return',nm:'Return',dt:'Returns to parent.'}
+],
+fm:[
+  {s:{y:'Zapier',f:'deal_id'},tp:'id',tx:'HubSpot deal lookup',d:{y:'HubSpot',f:'deal lookup ID'},ex:'28471956302',st:'1→2'},
+  {s:{y:'Zapier',f:'ruddr_client_id'},tp:'id',tx:'Allocation project client',d:{y:'Ruddr',f:'project.clientId'},ex:'CLT-00842',st:'1→3'},
+  {s:{y:'Zapier',f:'ruddr_project_admin'},tp:'id',tx:'Project admin assignment',d:{y:'Ruddr',f:'project.projectAdminId'},ex:'MEM-291',st:'1→3'},
+  {s:{y:'HubSpot',f:'deal.dealname'},tp:'text',tx:'Appended with "- Allocations"',d:{y:'Ruddr',f:'project.name'},ex:'Acme Pharma — Allocations',st:'2→3'},
+  {s:{y:'Ruddr',f:'project.code'},tp:'text',tx:'Written back to HubSpot deal',d:{y:'HubSpot',f:'deal.ruddr_project_code'},ex:'PRJ-4822',st:'3→4'}
+]}
+
+]; // END ZAPS
+
+/* ============================================================
+   RENDER ENGINE
+   ============================================================ */
+document.getElementById('ds').textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+function countFields(z){return z.fm.filter(function(f){return f.s;}).length;}
+function allSystems(){var s=new Set();Z.forEach(function(z){if(z.triggerApp&&z.triggerApp!=='Zapier')s.add(z.triggerApp);(z.destApps||[]).forEach(function(a){if(a!=='Zapier')s.add(a);});});return s;}
+
+// KPIs
+(function(){
+  var sys=allSystems(),flds=0,hrs=0,runs=0,steps=0;
+  var orch=Z.filter(function(z){return z.role==='orchestrator';}).length;
+  var subs=Z.filter(function(z){return z.role==='sub-zap';}).length;
+  var nest=Z.filter(function(z){return z.role==='nested';}).length;
+  Z.forEach(function(z){flds+=countFields(z);hrs+=z.hrs||0;runs+=z.runs||0;steps+=(z.steps||[]).length;});
+  var t=[
+    {l:'Total Zaps',v:Z.length,s:orch+' orchestrator · '+subs+' sub-zaps · '+nest+' nested'},
+    {l:'Execution Steps',v:steps,s:'Across all workflows'},
+    {l:'Systems',v:sys.size,s:Array.from(sys).join(' · ')},
+    {l:'Fields Mapped',v:flds,s:'Cross-system boundaries'},
+    {l:'Task Templates',v:'16 + var',s:'Billable + non-billable by SKU'},
+    {l:'Hours Saved/Mo',v:'~'+hrs,s:'≈'+runs+' runs/mo'}
+  ];
+  document.getElementById('kpis').innerHTML=t.map(function(k){return '<div class="kpi card"><div class="kl">'+k.l+'</div><div class="kv">'+k.v+'</div><div class="ks">'+k.s+'</div></div>';}).join('');
+})();
+
+// Narrative
+(function(){
+  var sys=allSystems(),flds=0,steps=0;
+  Z.forEach(function(z){flds+=countFields(z);steps+=(z.steps||[]).length;});
+  document.getElementById('nar').innerHTML=
+    'When a deal reaches "Closing" or "Closed Won" in HubSpot, a single Zapier orchestrator triggers a cascade of <strong>'+Z.length+' interconnected automations</strong> spanning <strong>'+steps+' execution steps</strong>. '+
+    'These workflows move <strong>'+flds+' fields</strong> across <strong>'+sys.size+' operational systems</strong> ('+Array.from(sys).join(', ')+'), '+
+    'creating client records in Ruddr, customer records in Sage Intacct, projects with role-specific task templates, and contracts with per-line-item billing configurations — all without a single manual entry. '+
+    'The architecture is modular: the orchestrator delegates to 5 sub-Zaps, which in turn call 4 nested sub-Zaps for specialized operations like task creation and allocation project setup. '+
+    'Previously, this process required ~25 minutes of manual data entry per deal across 3 systems, saving an estimated <strong>~20 hours/month</strong>.';
+})();
+
+// Hierarchy tree
+(function(){
+  function node(z,depth){
+    var badge=z.role==='orchestrator'?'tn-orch':z.role==='sub-zap'?'tn-sub':'tn-nest';
+    var label=z.role==='orchestrator'?'Orchestrator':z.role==='sub-zap'?'Sub-Zap':'Nested';
+    var children=Z.filter(function(c){return c.parent===z.id;});
+    var cls=depth===0?'tree-root':'tree-node';
+    var html='<div class="'+cls+'" onclick="openMo(\''+z.id+'\')">'+
+      '<span class="tn-name">'+z.name+'</span>'+
+      '<span class="tn-badge '+badge+'">'+label+'</span>'+
+      '<span class="tn-meta">'+(z.steps||[]).length+' steps · '+countFields(z)+' fields'+(z.calledBy?' · Called by: '+z.calledBy:'')+'</span>'+
+      '</div>';
+    if(children.length){
+      html+='<div class="tree-children">'+children.map(function(c){return node(c,depth+1);}).join('')+'</div>';
+    }
+    return html;
+  }
+  var roots=Z.filter(function(z){return !z.parent;});
+  document.getElementById('tree-wrap').innerHTML='<div class="tree">'+roots.map(function(r){return node(r,0);}).join('')+'</div>';
+})();
+
+// Records Created summary
+(function(){
+  document.getElementById('rec-grid').innerHTML=
+    '<div class="rec-sys" style="border-color:var(--rd)"><div class="rec-sys-name" style="color:var(--rd)">Ruddr</div>'+
+    '<div class="rec-item"><strong>Client</strong> — Find or create (1 per deal)</div>'+
+    '<div class="rec-item"><strong>Project</strong> — 1 per line item (excluding PT/L: SKUs)</div>'+
+    '<div class="rec-item"><strong>Tasks</strong> — 3–16 per project, template by SKU bucket</div>'+
+    '<div class="rec-item"><strong>Allocation Project</strong> — 1 per deal (if none exists)</div></div>'+
+
+    '<div class="rec-sys" style="border-color:var(--si)"><div class="rec-sys-name" style="color:#1a9b55">Sage Intacct</div>'+
+    '<div class="rec-item"><strong>Customer</strong> — Find or create (1 per deal)</div>'+
+    '<div class="rec-item"><strong>Contract</strong> — 1 per deal (draft, termed, monthly billing)</div>'+
+    '<div class="rec-item"><strong>Contract Lines</strong> — 1 per line item (with billing + revenue templates)</div>'+
+    '<div class="rec-item"><strong>Project</strong> — 1 per line item (linked to Ruddr project + contract)</div>'+
+    '<div class="rec-item"><strong>Tasks</strong> — 16 billable (PF:TM) or 3–6 non-billable per project</div>'+
+    '<div class="rec-item"><strong>Contact</strong> — Find or create (standalone workflow)</div></div>'+
+
+    '<div class="rec-sys" style="border-color:var(--hs)"><div class="rec-sys-name" style="color:#e05a3a">HubSpot (Writebacks)</div>'+
+    '<div class="rec-item"><strong>Line Item</strong> — <code>ruddr_project_id</code> written back per line</div>'+
+    '<div class="rec-item"><strong>Deal</strong> — <code>ruddr_project_code</code> written back for allocations</div></div>';
+})();
+
+// System map
+(function(){
+  var svg=document.getElementById('smap');
+  var W=1100,H=320,bW=150,bH=56;
+  var pos={'HubSpot':{x:140,y:H/2},'Zapier':{x:W/2,y:H/2},'Ruddr':{x:W-180,y:H/2-60},'Sage Intacct':{x:W-180,y:H/2+60}};
+
+  function arrow(x1,y1,x2,y2,lbl,col){
+    var dx=x2-x1,dy=y2-y1,ln=Math.sqrt(dx*dx+dy*dy),tr=bW/2+12;
+    var sx=x1+dx/ln*tr,sy=y1+dy/ln*tr,ex=x2-dx/ln*tr,ey=y2-dy/ln*tr;
+    var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',sx);l.setAttribute('y1',sy);l.setAttribute('x2',ex);l.setAttribute('y2',ey);
+    l.setAttribute('stroke',col||'#E60F65');l.setAttribute('stroke-width','2.5');l.setAttribute('marker-end','url(#ah)');
+    svg.appendChild(l);
+    if(lbl){var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',(sx+ex)/2);t.setAttribute('y',(sy+ey)/2-8);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','10');t.setAttribute('fill','#8B91AA');t.setAttribute('font-family','system-ui,sans-serif');
+    t.textContent=lbl;svg.appendChild(t);}
+  }
+  arrow(pos.HubSpot.x,pos.HubSpot.y,pos.Zapier.x,pos.Zapier.y,'Deal stage change','#FF7A59');
+  arrow(pos.Zapier.x,pos.Zapier.y,pos.Ruddr.x,pos.Ruddr.y,'Client+Project+Tasks','#4B7BEC');
+  arrow(pos.Zapier.x,pos.Zapier.y,pos['Sage Intacct'].x,pos['Sage Intacct'].y,'Customer+Contract+Lines+Tasks','#2ECC71');
+  arrow(pos.Ruddr.x,pos.Ruddr.y,pos['Sage Intacct'].x,pos['Sage Intacct'].y,'project code linking','#8B91AA');
+  // Writeback arrows (dashed)
+  var wb=document.createElementNS('http://www.w3.org/2000/svg','line');
+  wb.setAttribute('x1',pos.Zapier.x-40);wb.setAttribute('y1',pos.Zapier.y-30);
+  wb.setAttribute('x2',pos.HubSpot.x+bW/2+12);wb.setAttribute('y2',pos.HubSpot.y-15);
+  wb.setAttribute('stroke','#FF7A59');wb.setAttribute('stroke-width','1.5');wb.setAttribute('stroke-dasharray','5,4');
+  wb.setAttribute('marker-end','url(#ah)');svg.appendChild(wb);
+  var wbt=document.createElementNS('http://www.w3.org/2000/svg','text');
+  wbt.setAttribute('x',(pos.Zapier.x-40+pos.HubSpot.x+bW/2)/2);wbt.setAttribute('y',pos.HubSpot.y-30);
+  wbt.setAttribute('text-anchor','middle');wbt.setAttribute('font-size','9');wbt.setAttribute('fill','#8B91AA');
+  wbt.setAttribute('font-family','system-ui,sans-serif');wbt.textContent='writebacks (ruddr_project_id/code)';
+  svg.appendChild(wbt);
+
+  Object.keys(pos).forEach(function(nm){
+    var p=pos[nm],isZ=nm==='Zapier';
+    var colors={'HubSpot':['#FFF','#FF7A59'],'Ruddr':['#FFF','#4B7BEC'],'Sage Intacct':['#FFF','#2ECC71'],'Zapier':['#FF4F00','#FF4F00']};
+    var c=colors[nm];
+    var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',p.x-bW/2);r.setAttribute('y',p.y-bH/2);r.setAttribute('width',bW);r.setAttribute('height',bH);
+    r.setAttribute('rx',isZ?12:8);r.setAttribute('fill',c[0]);r.setAttribute('stroke',c[1]);r.setAttribute('stroke-width',isZ?0:2);
+    r.style.filter='drop-shadow(0 2px 4px rgba(0,0,0,.08))';svg.appendChild(r);
+    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',p.x);t.setAttribute('y',p.y-1);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size',isZ?14:13);t.setAttribute('font-weight','700');
+    t.setAttribute('fill',isZ?'#FFF':c[1]);t.setAttribute('font-family','system-ui,sans-serif');
+    t.textContent=isZ?'⚡ Zapier (10 Zaps)':nm;svg.appendChild(t);
+    var s=document.createElementNS('http://www.w3.org/2000/svg','text');
+    s.setAttribute('x',p.x);s.setAttribute('y',p.y+16);s.setAttribute('text-anchor','middle');
+    s.setAttribute('font-size','10');s.setAttribute('fill',isZ?'rgba(255,255,255,.8)':'#8B91AA');
+    s.setAttribute('font-family','system-ui,sans-serif');
+    var labels={'HubSpot':'Source of truth','Ruddr':'Project delivery','Sage Intacct':'Finance & billing','Zapier':'125+ steps orchestrated'};
+    s.textContent=labels[nm];svg.appendChild(s);
+  });
+})();
+
+// Chips + Grid
+var curRole='All';
+function renderChips(){
+  var roles=['All','orchestrator','sub-zap','nested'];
+  var labels={'All':'All ('+Z.length+')','orchestrator':'Orchestrator ('+Z.filter(function(z){return z.role==='orchestrator';}).length+')','sub-zap':'Sub-Zaps ('+Z.filter(function(z){return z.role==='sub-zap';}).length+')','nested':'Nested ('+Z.filter(function(z){return z.role==='nested';}).length+')'};
+  document.getElementById('chips').innerHTML=roles.map(function(r){
+    return '<div class="chip '+(r===curRole?'on':'')+'" data-r="'+r+'">'+labels[r]+'</div>';
+  }).join('');
+  document.querySelectorAll('#chips .chip').forEach(function(c){
+    c.addEventListener('click',function(){curRole=c.dataset.r;renderChips();renderGrid();});
+  });
+}
+function renderGrid(){
+  var list=curRole==='All'?Z:Z.filter(function(z){return z.role===curRole;});
+  document.getElementById('zg').innerHTML=list.map(function(z){
+    var apps=[z.triggerApp].concat(z.destApps||[]);
+    var u=[];apps.forEach(function(a){if(u.indexOf(a)<0)u.push(a);});
+    var fc=countFields(z),sc=(z.steps||[]).length;
+    var badge=z.role==='orchestrator'?'st-prod':'st-sub';
+    var label=z.role==='orchestrator'?'Orchestrator':z.role==='sub-zap'?'Sub-Zap':'Nested';
+    return '<div class="zc card" data-id="'+z.id+'"><div class="zc-h"><div>'+
+      '<div class="zc-n">'+z.name+'</div>'+
+      '<div class="zc-f">'+(z.calledBy||z.folder)+'</div>'+
+      '</div><div class="zc-st '+badge+'">'+label+'</div></div>'+
+      '<div class="zc-flow">'+u.map(function(a,i){
+        return (i>0?'<span class="fl-ar">→</span>':'')+
+          '<span class="fa '+acls(a)+'">'+a+'</span>';
+      }).join('')+'</div>'+
+      (z.replace?'<div style="font-size:11px;color:var(--tm);font-style:italic;margin-top:6px">'+z.replace.substring(0,120)+(z.replace.length>120?'…':'')+'</div>':'')+
+      '<div class="zc-ft"><span><span class="zc-fc">'+fc+'</span> fields · '+sc+' steps</span>'+
+      (z.hrs?'<span style="color:var(--ok);font-weight:600">~'+z.hrs+' hrs/mo</span>':'')+'</div></div>';
+  }).join('');
+  document.querySelectorAll('.zc').forEach(function(c){
+    c.addEventListener('click',function(){openMo(c.dataset.id);});
+  });
+}
+renderChips();renderGrid();
+
+// Modal
+function openMo(id){
+  var z=Z.find(function(x){return x.id===id;});
+  if(!z)return;
+  var fc=countFields(z);
+  document.getElementById('mt').textContent=z.name;
+  document.getElementById('ms').textContent=(z.calledBy||z.folder)+' · '+(z.steps||[]).length+' steps · '+fc+' fields'+(z.hrs?' · ~'+z.hrs+' hrs/mo':'');
+  document.getElementById('mtabs').innerHTML=
+    '<div class="mo-tab on" data-t="steps">Steps ('+(z.steps||[]).length+')</div>'+
+    '<div class="mo-tab" data-t="fields">Fields ('+fc+')</div>';
+  document.getElementById('mbody').innerHTML=
+    '<div class="tc on" id="t-steps">'+bldSteps(z)+'</div>'+
+    '<div class="tc" id="t-fields">'+bldFields(z)+'</div>';
+  document.querySelectorAll('.mo-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('.mo-tab').forEach(function(t){t.classList.remove('on');});
+      document.querySelectorAll('.tc').forEach(function(c){c.classList.remove('on');});
+      tab.classList.add('on');document.getElementById('t-'+tab.dataset.t).classList.add('on');
+    });
+  });
+  var si=document.getElementById('fsr');
+  if(si)si.addEventListener('input',function(e){
+    var q=e.target.value.toLowerCase();
+    document.querySelectorAll('#fmt tbody tr').forEach(function(r){
+      if(r.classList.contains('gr')){r.style.display=q?'none':'';return;}
+      r.style.display=r.textContent.toLowerCase().indexOf(q)>=0?'':'none';
+    });
+  });
+  document.getElementById('mob').classList.add('open');
+}
+
+function bldSteps(z){
+  if(!z.steps||!z.steps.length)return '<div style="color:var(--tm);padding:20px">No step data.</div>';
+  return '<div class="pipe">'+z.steps.map(function(s){
+    var tp=s.t==='subzap'?'sub-zap':s.t;
+    var html='<div class="stp-dt">'+(s.dt||'')+'</div>';
+    if(s.tags)html+='<div class="stp-tags">'+s.tags.map(function(t){return '<span class="stp-tag">'+t+'</span>';}).join('')+'</div>';
+    if(s.io)html+='<div class="stp-io">'+s.io.map(function(i){return '<div class="stp-ior">→ <strong>'+i.f+'</strong> ← '+i.s+'</div>';}).join('')+'</div>';
+    if(s.sz)html+='<div style="margin-top:4px;color:var(--zp);font-weight:600;font-size:11px">⚡ '+s.sz+'</div>';
+    if(s.note)html+='<div class="note"><strong>Note:</strong> '+s.note+'</div>';
+    return '<div class="stp"><div class="stp-n">'+s.n+'</div><div class="stp-d sd-'+s.t+'"></div>'+
+      '<div class="stp-hd"><span class="stp-bg bg-'+s.t+'">'+tp+'</span>'+
+      (s.a?'<span class="stp-ap" style="background:'+({HubSpot:'rgba(255,122,89,.1)',Ruddr:'rgba(75,123,236,.1)','Sage Intacct':'rgba(46,204,113,.1)',Zapier:'rgba(255,79,0,.1)'}[s.a]||'var(--lav)')+';color:'+({HubSpot:'#e05a3a',Ruddr:'#4B7BEC','Sage Intacct':'#1a9b55',Zapier:'#FF4F00'}[s.a]||'var(--navy)')+'">'+s.a+'</span>':'')+
+      '<span class="stp-nm">'+s.nm+'</span></div>'+html+'</div>';
+  }).join('')+'</div>';
+}
+
+function bldFields(z){
+  var rows='';
+  z.fm.forEach(function(f){
+    if(f.g&&!f.s){rows+='<tr class="gr"><td colspan="8">'+f.g+'</td></tr>';return;}
+    if(!f.s)return;
+    if(f.g)rows+='<tr class="gr"><td colspan="8">'+f.g+'</td></tr>';
+    rows+='<tr><td><strong>'+f.s.y+'</strong></td><td><span class="fp">'+f.s.f+'</span></td>'+
+      '<td><span class="fty">'+f.tp+'</span></td><td><span class="ftr">'+f.tx+'</span></td>'+
+      '<td><strong>'+f.d.y+'</strong></td><td><span class="fp">'+f.d.f+'</span></td>'+
+      '<td><span class="fex">'+f.ex+'</span></td><td><span class="fst">'+f.st+'</span></td></tr>';
+  });
+  return '<input type="text" class="fsr" id="fsr" placeholder="Search fields, systems, types…"/>'+
+    '<div style="overflow-x:auto"><table class="ft" id="fmt"><thead><tr>'+
+    '<th>Source</th><th>Field</th><th>Type</th><th>Transform</th><th>Dest</th><th>Field</th><th>Example</th><th>Steps</th>'+
+    '</tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+document.getElementById('mx').addEventListener('click',function(){document.getElementById('mob').classList.remove('open');});
+document.getElementById('mob').addEventListener('click',function(e){if(e.target.id==='mob')document.getElementById('mob').classList.remove('open');});
+</script>
+</body>
+</html>
