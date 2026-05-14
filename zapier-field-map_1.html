@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arc | Zapier Automation Map</title>
+<style>
+:root {
+  --navy: #020434;
+  --pink: #E60F65;
+  --lavender: #EDF0FA;
+  --white: #FFFFFF;
+  --light-gray: #F4F5F9;
+  --border: #D8DCE8;
+  --text-dark: #1A1D3A;
+  --text-mid: #4A4F6B;
+  --text-light: #8B91AA;
+  --chart-1: #E60F65;
+  --chart-2: #020434;
+  --chart-3: #6C7BB5;
+  --chart-4: #A8B0D4;
+  --chart-5: #D8DCE8;
+  --success: #1FA971;
+  --warning: #E89B2D;
+  --danger: #E74C3C;
+  --hs: #FF7A59;
+  --rd: #4B7BEC;
+  --si: #2ECC71;
+  --zp: #FF4F00;
+  --sidebar-w: 220px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--lavender); color: var(--text-dark); font-size: 14px; line-height: 1.5; overflow: hidden; height: 100vh; }
+
+/* ===== TOP NAV ===== */
+.topnav {
+  background: var(--navy); color: var(--white); height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; border-bottom: 3px solid var(--pink); position: fixed;
+  top: 0; left: 0; right: 0; z-index: 50;
+}
+.topnav-left { display: flex; align-items: center; gap: 16px; }
+.topnav-burger { display: none; background: none; border: none; color: var(--white); font-size: 22px; cursor: pointer; padding: 4px 8px; }
+.topnav-title { font-size: 16px; font-weight: 600; }
+.topnav-title span { color: rgba(255,255,255,.5); font-weight: 400; }
+.topnav-right { display: flex; align-items: center; gap: 12px; }
+.topnav-user { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.topnav-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--pink);
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+}
+.topnav-date { font-size: 11px; color: rgba(255,255,255,.5); }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed; top: 59px; left: 0; bottom: 0; width: var(--sidebar-w);
+  background: var(--navy); color: var(--white); overflow-y: auto; z-index: 40;
+  padding: 16px 0; transition: transform .25s ease;
+}
+.sidebar-section { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sidebar-section:last-child { border-bottom: none; }
+.sidebar-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: rgba(255,255,255,.35); padding: 0 20px; margin-bottom: 6px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+  font-size: 13px; cursor: pointer; color: rgba(255,255,255,.7);
+  border-left: 3px solid transparent; transition: all .15s; user-select: none;
+}
+.sidebar-item:hover { background: rgba(255,255,255,.05); color: var(--white); }
+.sidebar-item.active { color: var(--white); background: rgba(230,15,101,.08); border-left-color: var(--pink); }
+.sidebar-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar-count {
+  margin-left: auto; font-size: 10px; background: rgba(255,255,255,.1);
+  padding: 1px 7px; border-radius: 8px; font-weight: 600;
+}
+
+/* ===== MAIN ===== */
+.main {
+  margin-left: var(--sidebar-w); margin-top: 59px; height: calc(100vh - 59px);
+  overflow-y: auto; padding: 24px 32px 48px; background: var(--lavender);
+}
+.view { display: none; }
+.view.active { display: block; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 24px; box-shadow: 0 1px 3px rgba(2,4,52,.04); margin-bottom: 20px;
+}
+.card-title {
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-mid); margin-bottom: 16px;
+}
+
+/* ===== KPI TILES ===== */
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.kpi-tile {
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px 20px; box-shadow: 0 1px 3px rgba(2,4,52,.04);
+}
+.kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 4px; }
+.kpi-value { font-size: 28px; font-weight: 700; color: var(--navy); line-height: 1.1; }
+.kpi-delta {
+  display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+  border-radius: 4px; margin-top: 6px;
+}
+.kpi-delta.positive { background: rgba(31,169,113,.1); color: var(--success); }
+.kpi-delta.neutral { background: rgba(139,145,170,.1); color: var(--text-light); }
+.kpi-sub { font-size: 11px; color: var(--text-mid); margin-top: 4px; }
+
+/* ===== CHARTS ===== */
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.chart-card { position: relative; }
+.chart-card canvas { width: 100%; height: 260px; }
+.chart-tooltip {
+  position: fixed; background: var(--navy); color: var(--white); padding: 6px 12px;
+  border-radius: 6px; font-size: 12px; pointer-events: none; z-index: 200;
+  display: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+
+/* ===== TABS ===== */
+.tab-bar { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+.tab-item {
+  padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--text-mid);
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .15s; user-select: none;
+}
+.tab-item:hover { color: var(--navy); }
+.tab-item.active { color: var(--pink); border-bottom-color: var(--pink); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; padding: 2px 8px; border-radius: 4px;
+}
+.badge-success { background: rgba(31,169,113,.12); color: var(--success); }
+.badge-warning { background: rgba(232,155,45,.12); color: var(--warning); }
+.badge-info { background: rgba(75,123,236,.12); color: var(--rd); }
+.badge-accent { background: rgba(230,15,101,.1); color: var(--pink); }
+.badge-neutral { background: rgba(139,145,170,.12); color: var(--text-light); }
+.badge-zap { background: rgba(255,79,0,.1); color: var(--zp); }
+
+/* ===== DATA TABLE ===== */
+.dt-wrap { overflow-x: auto; }
+.dt-search {
+  width: 100%; max-width: 360px; padding: 9px 14px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 13px; margin-bottom: 12px; font-family: inherit;
+}
+.dt-search:focus { outline: none; border-color: var(--pink); }
+.dt {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.dt thead th {
+  background: var(--navy); color: var(--white); text-align: left;
+  padding: 10px 12px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: .6px; font-weight: 600; cursor: pointer; user-select: none;
+  position: sticky; top: 0; white-space: nowrap;
+}
+.dt thead th:first-child { border-top-left-radius: 6px; }
+.dt thead th:last-child { border-top-right-radius: 6px; }
+.dt thead th:hover { background: #0a0c44; }
+.dt thead th .sort-arrow { margin-left: 4px; font-size: 10px; opacity: .5; }
+.dt thead th.sorted .sort-arrow { opacity: 1; color: var(--pink); }
+.dt tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.dt tbody tr:nth-child(even) { background: var(--light-gray); }
+.dt tbody tr:hover { background: rgba(230,15,101,.04); }
+.dt tbody tr.clickable { cursor: pointer; }
+.dt .group-row td {
+  background: var(--navy); color: var(--white); font-weight: 600;
+  font-size: 10px; text-transform: uppercase; letter-spacing: .5px; padding: 7px 12px;
+}
+.pill {
+  display: inline-block; background: var(--lavender); color: var(--navy);
+  padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600;
+  font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+}
+.pill-sm { font-size: 10px; padding: 1px 5px; }
+
+/* ===== HIERARCHY TREE ===== */
+.tree { font-size: 13px; }
+.tree-node { padding: 8px 12px 8px 28px; border-left: 2px solid var(--border); position: relative; cursor: pointer; border-radius: 0 6px 6px 0; transition: background .1s; }
+.tree-node:hover { background: rgba(230,15,101,.03); }
+.tree-node::before { content: ''; position: absolute; left: -2px; top: 18px; width: 22px; height: 0; border-top: 2px solid var(--border); }
+.tree-root { padding-left: 12px; border-left: none; }
+.tree-root::before { display: none; }
+.tree-children { margin-left: 12px; }
+
+/* ===== SYSTEM MAP ===== */
+.smap-wrap { overflow-x: auto; }
+
+/* ===== RECORDS SUMMARY ===== */
+.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.rec-col { border-top: 3px solid var(--border); padding-top: 14px; }
+.rec-col-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.rec-item { font-size: 12px; color: var(--text-mid); padding: 4px 0 4px 14px; border-left: 2px solid var(--border); margin-bottom: 4px; line-height: 1.4; }
+.rec-item strong { color: var(--text-dark); }
+
+/* ===== ZAP CARDS ===== */
+.zap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
+.zap-card { cursor: pointer; transition: all .15s; }
+.zap-card:hover { border-color: var(--pink); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(2,4,52,.08); }
+.zap-name { font-size: 14px; font-weight: 600; color: var(--navy); line-height: 1.3; }
+.zap-meta { font-size: 10px; color: var(--text-light); text-transform: uppercase; letter-spacing: .7px; margin-top: 3px; }
+.zap-flow { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 10px 0; flex-wrap: wrap; }
+.zap-app { padding: 3px 8px; border-radius: 5px; font-weight: 500; font-size: 11px; }
+.app-hs { background: rgba(255,122,89,.12); color: #e05a3a; }
+.app-rd { background: rgba(75,123,236,.12); color: var(--rd); }
+.app-si { background: rgba(46,204,113,.12); color: #1a9b55; }
+.app-zp { background: rgba(255,79,0,.1); color: var(--zp); }
+.app-df { background: var(--lavender); color: var(--navy); }
+.flow-arrow { color: var(--pink); font-weight: 700; }
+.zap-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-mid); }
+.zap-desc { font-size: 11px; color: var(--text-mid); font-style: italic; margin-top: 6px; line-height: 1.4; }
+
+/* ===== CHIPS ===== */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.chip { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 5px 13px; font-size: 11px; cursor: pointer; transition: all .12s; user-select: none; }
+.chip:hover { border-color: var(--navy); }
+.chip.on { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+/* ===== MODAL ===== */
+.modal-bg { position: fixed; inset: 0; background: rgba(2,4,52,.6); display: none; align-items: flex-start; justify-content: center; z-index: 200; padding: 24px 16px; overflow-y: auto; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--white); border-radius: 10px; max-width: 1200px; width: 100%; box-shadow: 0 20px 60px rgba(2,4,52,.4); }
+.modal-head { padding: 20px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.modal-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+.modal-subtitle { font-size: 12px; color: var(--text-mid); margin-top: 3px; }
+.modal-close { background: var(--lavender); border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; color: var(--navy); font-size: 13px; font-weight: 600; }
+.modal-close:hover { background: var(--border); }
+.modal-tabs { display: flex; border-bottom: 2px solid var(--border); padding: 0 28px; }
+.modal-tab { padding: 12px 18px; font-size: 12px; font-weight: 600; color: var(--text-mid); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; user-select: none; }
+.modal-tab:hover { color: var(--navy); }
+.modal-tab.on { color: var(--pink); border-bottom-color: var(--pink); }
+.modal-body { padding: 20px 28px; max-height: 65vh; overflow-y: auto; }
+.mtc { display: none; }
+.mtc.on { display: block; }
+
+/* Step pipeline */
+.pipe { padding-left: 8px; }
+.stp { position: relative; padding: 10px 14px 10px 34px; border-left: 2px solid var(--border); margin-left: 6px; }
+.stp:last-child { border-left-color: transparent; }
+.stp-dot { position: absolute; left: -7px; top: 14px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--border); background: var(--white); }
+.sd-trigger { border-color: var(--hs); background: var(--hs); }
+.sd-filter { border-color: var(--warning); background: var(--warning); }
+.sd-formatter { border-color: var(--text-mid); background: var(--text-mid); }
+.sd-action { border-color: var(--rd); background: rgba(75,123,236,.3); }
+.sd-api { border-color: var(--hs); background: rgba(255,122,89,.3); }
+.sd-subzap { border-color: var(--zp); background: var(--zp); }
+.sd-code { border-color: #9b59b6; background: rgba(155,89,182,.3); }
+.sd-loop { border-color: var(--success); background: rgba(31,169,113,.3); }
+.sd-path { border-color: var(--text-light); background: var(--text-light); }
+.sd-delay { border-color: var(--border); background: var(--light-gray); }
+.sd-return { border-color: var(--success); background: var(--success); }
+.stp-num { position: absolute; left: -28px; top: 12px; font-size: 9px; font-weight: 700; color: var(--text-light); width: 16px; text-align: right; }
+.stp-hd { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.stp-nm { font-weight: 600; color: var(--navy); font-size: 12px; }
+.stp-dt { font-size: 11px; color: var(--text-mid); margin-top: 3px; line-height: 1.5; }
+.stp-dt code { background: var(--lavender); padding: 1px 4px; border-radius: 2px; font-family: ui-monospace,'SF Mono',Consolas,monospace; font-size: 10px; color: var(--navy); }
+.stp-io { margin-top: 4px; }
+.stp-ior { font-size: 11px; color: var(--text-mid); margin-left: 10px; line-height: 1.5; }
+.stp-ior strong { color: var(--text-dark); }
+.stp-tags { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 3px; }
+.stp-tag { font-size: 9px; font-family: ui-monospace,'SF Mono',Consolas,monospace; background: var(--lavender); color: var(--navy); padding: 1px 5px; border-radius: 2px; }
+.note-box { background: rgba(232,155,45,.08); border-left: 3px solid var(--warning); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 11px; color: var(--text-mid); margin-top: 6px; }
+.note-box strong { color: var(--text-dark); }
+
+/* ===== MOBILE ===== */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .topnav-burger { display: block; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .chart-grid { grid-template-columns: 1fr; }
+  .zap-grid { grid-template-columns: 1fr; }
+  .rec-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-left">
+    <button class="topnav-burger" id="burger">☰</button>
+    <svg width="100" height="24" viewBox="0 0 100 24" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="18" font-family="system-ui,sans-serif" font-weight="700" font-size="16" fill="#FFF" letter-spacing="1">BEGHOU</text>
+    </svg>
+    <div class="topnav-title">Arc <span>|</span> Zapier Automation Map</div>
+  </div>
+  <div class="topnav-right">
+    <div class="topnav-date" id="nav-date"></div>
+    <div class="topnav-user">
+      <div class="topnav-avatar">PC</div>
+      <span>Patrick Conroy</span>
+    </div>
+  </div>
+</nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Views</div>
+    <div class="sidebar-item active" data-view="dashboard"><span class="sidebar-icon">⊞</span> Dashboard</div>
+    <div class="sidebar-item" data-view="architecture"><span class="sidebar-icon">⧉</span> Architecture</div>
+    <div class="sidebar-item" data-view="systemmap"><span class="sidebar-icon">◎</span> System Map</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Explore</div>
+    <div class="sidebar-item" data-view="zaps"><span class="sidebar-icon">⚡</span> Zap Inventory <span class="sidebar-count" id="sc-zaps"></span></div>
+    <div class="sidebar-item" data-view="fields"><span class="sidebar-icon">≡</span> Field Explorer <span class="sidebar-count" id="sc-fields"></span></div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main" id="main">
+
+  <!-- VIEW: DASHBOARD -->
+  <div class="view active" id="v-dashboard">
+    <div class="kpi-row" id="kpi-row"></div>
+    <div class="card" id="narrative-card"></div>
+    <div class="chart-grid" id="chart-grid"></div>
+  </div>
+
+  <!-- VIEW: ARCHITECTURE -->
+  <div class="view" id="v-architecture">
+    <div class="card"><div class="card-title">Automation Call Hierarchy</div><div id="tree-container"></div></div>
+    <div class="card"><div class="card-title">Records Created Per Deal Close</div><div class="rec-grid" id="rec-grid"></div></div>
+  </div>
+
+  <!-- VIEW: SYSTEM MAP -->
+  <div class="view" id="v-systemmap">
+    <div class="card"><div class="card-title">Cross-System Data Flow</div>
+      <div class="smap-wrap"><svg id="smap" viewBox="0 0 1100 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;min-height:320px;">
+        <defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#E60F65"/></marker>
+        <marker id="ahg" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#8B91AA"/></marker></defs>
+      </svg></div>
+    </div>
+  </div>
+
+  <!-- VIEW: ZAP INVENTORY -->
+  <div class="view" id="v-zaps">
+    <div class="chips" id="zap-chips"></div>
+    <div class="zap-grid" id="zap-grid"></div>
+  </div>
+
+  <!-- VIEW: FIELD EXPLORER -->
+  <div class="view" id="v-fields">
+    <div class="card" style="padding:16px 24px">
+      <input class="dt-search" id="global-field-search" placeholder="Search all fields across all Zaps…" />
+      <div class="dt-wrap"><table class="dt" id="global-field-table"></table></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHART TOOLTIP -->
+<div class="chart-tooltip" id="tooltip"></div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-head"><div><div class="modal-title" id="m-title"></div><div class="modal-subtitle" id="m-sub"></div></div><button class="modal-close" id="m-close">Close ✕</button></div>
+    <div class="modal-tabs" id="m-tabs"></div>
+    <div class="modal-body" id="m-body"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CHART LIBRARY — Canvas 2D with hover tooltips
+   ============================================================ */
+var TT = document.getElementById('tooltip');
+function showTT(e, text) { TT.style.display='block'; TT.textContent=text; TT.style.left=(e.clientX+12)+'px'; TT.style.top=(e.clientY-30)+'px'; }
+function hideTT() { TT.style.display='none'; }
+
+function drawBarChart(canvas, opts) {
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width = canvas.offsetWidth * 2;
+  var H = canvas.height = (opts.height || 260) * 2;
+  ctx.scale(2, 2);
+  var w = W/2, h = H/2;
+  var pad = { t: 36, r: 20, b: 40, l: 44 };
+  var cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+  var labels = opts.labels, values = opts.values, colors = opts.colors || [];
+  var max = Math.max.apply(null, values) * 1.15 || 1;
+  var barW = Math.min(40, (cw / labels.length) * 0.6);
+  var gap = cw / labels.length;
+
+  // Title
+  ctx.fillStyle = '#1A1D3A'; ctx.font = '600 12px system-ui'; ctx.fillText(opts.title || '', pad.l, 20);
+
+  // Gridlines
+  ctx.strokeStyle = '#EDF0FA'; ctx.lineWidth = 1;
+  for (var i = 0; i <= 4; i++) {
+    var y = pad.t + ch - (ch * i / 4);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+    ctx.fillStyle = '#8B91AA'; ctx.font = '10px system-ui'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(max * i / 4), pad.l - 6, y + 3);
+  }
+
+  // Bars
+  var hitBoxes = [];
+  labels.forEach(function(lbl, i) {
+    var bh = (values[i] / max) * ch;
+    var x = pad.l + i * gap + (gap - barW) / 2;
+    var y = pad.t + ch - bh;
+    ctx.fillStyle = colors[i % colors.length] || '#E60F65';
+    ctx.beginPath(); ctx.roundRect(x, y, barW, bh, [3,3,0,0]); ctx.fill();
+    hitBoxes.push({ x: x/2, y: y/2, w: barW/2, h: bh/2, label: lbl, value: values[i] });
+    // Label
+    ctx.fillStyle = '#8B91AA'; ctx.font = '10px system-ui'; ctx.textAlign = 'center';
+    var shortLbl = lbl.length > 12 ? lbl.substring(0,10)+'…' : lbl;
+    ctx.fillText(shortLbl, x + barW/2, pad.t + ch + 14);
+  });
+
+  canvas.onmousemove = function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var found = hitBoxes.find(function(b) { return mx >= b.x && mx <= b.x+b.w && my >= b.y && my <= b.y+b.h; });
+    if (found) showTT(e, found.label + ': ' + found.value);
+    else hideTT();
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+function drawDonutChart(canvas, opts) {
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width = canvas.offsetWidth * 2;
+  var H = canvas.height = (opts.height || 260) * 2;
+  ctx.scale(2, 2);
+  var w = W/2, h = H/2;
+  var cx = w * 0.4, cy = h / 2 + 10;
+  var r = Math.min(cx - 20, cy - 30) * 0.85;
+  var segs = opts.segments;
+  var total = segs.reduce(function(s, seg) { return s + seg.value; }, 0) || 1;
+
+  ctx.fillStyle = '#1A1D3A'; ctx.font = '600 12px system-ui'; ctx.fillText(opts.title || '', 12, 20);
+
+  var startAngle = -Math.PI / 2;
+  var arcs = [];
+  segs.forEach(function(seg) {
+    var sweep = (seg.value / total) * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + sweep);
+    ctx.closePath(); ctx.fillStyle = seg.color;
+    ctx.fill();
+    arcs.push({ start: startAngle, end: startAngle + sweep, label: seg.label, value: seg.value, pct: Math.round(seg.value/total*100) });
+    startAngle += sweep;
+  });
+  // Inner circle (donut hole)
+  ctx.beginPath(); ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2); ctx.fillStyle = '#FFF'; ctx.fill();
+  // Center text
+  ctx.fillStyle = '#020434'; ctx.font = '700 20px system-ui'; ctx.textAlign = 'center';
+  ctx.fillText(total, cx, cy + 2);
+  ctx.fillStyle = '#8B91AA'; ctx.font = '10px system-ui';
+  ctx.fillText('total', cx, cy + 16);
+  ctx.textAlign = 'left';
+
+  // Legend
+  var lx = w * 0.7, ly = 40;
+  segs.forEach(function(seg, i) {
+    ctx.fillStyle = seg.color;
+    ctx.fillRect(lx, ly + i * 22, 10, 10);
+    ctx.fillStyle = '#1A1D3A'; ctx.font = '12px system-ui';
+    ctx.fillText(seg.label + ' (' + seg.value + ')', lx + 16, ly + i * 22 + 10);
+  });
+
+  canvas.onmousemove = function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left - cx, my = e.clientY - rect.top - cy;
+    var dist = Math.sqrt(mx*mx + my*my);
+    if (dist < r && dist > r * 0.55) {
+      var angle = Math.atan2(my, mx);
+      if (angle < -Math.PI/2) angle += Math.PI * 2;
+      var found = arcs.find(function(a) { return angle >= a.start && angle < a.end; });
+      if (found) { showTT(e, found.label + ': ' + found.value + ' (' + found.pct + '%)'); return; }
+    }
+    hideTT();
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+function drawHBar(canvas, opts) {
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width = canvas.offsetWidth * 2;
+  var H = canvas.height = (opts.height || 260) * 2;
+  ctx.scale(2, 2);
+  var w = W/2, h = H/2;
+  var pad = { t: 36, r: 20, b: 16, l: 140 };
+  var labels = opts.labels, values = opts.values;
+  var max = Math.max.apply(null, values) * 1.15 || 1;
+  var barH = Math.min(22, ((h - pad.t - pad.b) / labels.length) * 0.65);
+  var gap = (h - pad.t - pad.b) / labels.length;
+  var color = opts.color || '#E60F65';
+
+  ctx.fillStyle = '#1A1D3A'; ctx.font = '600 12px system-ui'; ctx.fillText(opts.title || '', 12, 20);
+
+  var hitBoxes = [];
+  labels.forEach(function(lbl, i) {
+    var bw = (values[i] / max) * (w - pad.l - pad.r);
+    var y = pad.t + i * gap + (gap - barH) / 2;
+    ctx.fillStyle = color; ctx.beginPath();
+    ctx.roundRect(pad.l, y, bw, barH, [0,3,3,0]); ctx.fill();
+    hitBoxes.push({ x: pad.l/2, y: y/2, w: bw/2, h: barH/2, label: lbl, value: values[i] });
+    // Label
+    ctx.fillStyle = '#4A4F6B'; ctx.font = '11px system-ui'; ctx.textAlign = 'right';
+    var short = lbl.length > 20 ? lbl.substring(0,18)+'…' : lbl;
+    ctx.fillText(short, pad.l - 6, y + barH / 2 + 4);
+    // Value
+    ctx.fillStyle = '#8B91AA'; ctx.font = '10px system-ui'; ctx.textAlign = 'left';
+    ctx.fillText(values[i], pad.l + bw + 6, y + barH / 2 + 4);
+  });
+  ctx.textAlign = 'left';
+
+  canvas.onmousemove = function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var found = hitBoxes.find(function(b) { return mx >= b.x && mx <= b.x+b.w && my >= b.y && my <= b.y+b.h; });
+    if (found) showTT(e, found.label + ': ' + found.value);
+    else hideTT();
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+/* ============================================================
+   ZAP DATA (COMPACT — same data as before)
+   ============================================================ */
+function acls(a){return a==='HubSpot'?'app-hs':a==='Ruddr'?'app-rd':a==='Sage Intacct'?'app-si':a==='Zapier'?'app-zp':'app-df';}
+function cf(z){return z.fm.filter(function(f){return f.s;}).length;}
+
+var Z=[
+{id:'z1',name:'HubSpot Deal Data → Intacct Contracts',folder:'Finance Automation',role:'orchestrator',triggerApp:'HubSpot',destApps:['Ruddr','Sage Intacct'],replace:'Finance Ops manually creates customer records in Sage Intacct, contract + line items, and parallel Ruddr client/project/tasks. ~25 min/deal.',hrs:20,runs:48,parent:null,calledBy:null,
+steps:[{n:1,t:'trigger',a:'HubSpot',nm:'Deal Property Change (dealstage)',dt:'Fires on <code>dealstage</code> change. Retrieves 8 deal properties.',tags:['hubspotownerid','hs_primary_associated_company','project_start_date','project_end_date','hs_num_of_associated_line_items','activeproject','primary_company','company_owner']},{n:2,t:'filter',nm:'Line Items > 0',dt:'Halts if <code>hs_num_of_associated_line_items = 0</code>'},{n:3,t:'filter',nm:'Deal Stage = Closing or Closed Won',dt:'<code>dealstage = 172201830</code> (Closed Won) or <code>172201829</code> (Closing)'},{n:4,t:'formatter',nm:'Format Start Date',dt:'<code>project_start_date</code> epoch → <code>YYYY-MM-DD</code>'},{n:5,t:'formatter',nm:'Format End Date',dt:'<code>project_end_date</code> epoch → <code>YYYY-MM-DD</code>'},{n:6,t:'api',a:'HubSpot',nm:'GET Associated Line Items',dt:'<code>GET /crm/v4/objects/deals/{id}/associations/contacts</code>',note:'URL references contacts — possible mislabel.'},{n:7,t:'api',a:'HubSpot',nm:'GET Associated Contact',dt:'Returns contact IDs.'},{n:8,t:'formatter',nm:'Select First Contact',dt:'Pick-from-list: first contact ID.'},{n:9,t:'action',a:'HubSpot',nm:'Get Contact by ID',dt:'Full contact (email, name).'},{n:10,t:'subzap',nm:'Get Line Items',sz:'[Production] Get Line Items',dt:'Retrieves + structures all deal line items.',io:[{f:'deal_id_required',s:'Deal ID'}]},{n:11,t:'action',a:'HubSpot',nm:'Get Company by ID',dt:'Returns company name + ID.'},{n:12,t:'subzap',nm:'Find/Create Ruddr Client',sz:'[Production] Find/Create Ruddr Client',dt:'Looks up client in Ruddr; creates if not found.',io:[{f:'client_email',s:'Contact email (9)'},{f:'client_name',s:'Contact name (9)'},{f:'customer_name',s:'Company name (11)'},{f:'deal_owner',s:'hubspotownerid (1)'}]},{n:13,t:'subzap',nm:'Create Ruddr Projects/Tasks',sz:'[Production] Create Ruddr Projects',dt:'Project + tasks per line item in Ruddr.',io:[{f:'ruddr_client_id_required',s:'Client ID (12)'},{f:'hubspot_deal_name',s:'Deal name'},{f:'hubspot_deal_id',s:'Deal ID'},{f:'line_items_data',s:'Line items (10)'}]},{n:14,t:'filter',nm:'Closed Won Only',dt:'Intacct steps only if <code>dealstage = 172201830</code>.'},{n:15,t:'subzap',nm:'Find/Create Intacct Customer',sz:'[Production] Find/Create Intacct Customer',dt:'Looks up / creates customer in Sage Intacct.',io:[{f:'hubspot_client_id',s:'Company ID (11)'},{f:'company_id_required',s:'hs_primary_associated_company'},{f:'client_code',s:'Ruddr client code (12)'}]},{n:16,t:'subzap',nm:'Create Intacct Contract + Lines',sz:'[Production] Create Intacct Contract + Contract Lines',dt:'Contract header + per-line contract lines.',io:[{f:'line_item_data',s:'Line items (10)'},{f:'intacct_customer_key',s:'Customer key (15)'},{f:'hubspot_deal_id',s:'Deal ID'},{f:'deal_end_date',s:'Formatted (5)'},{f:'deal_start_date',s:'Formatted (4)'},{f:'intacct_customer_id',s:'Customer ID (15)'},{f:'hubspot_deal_name',s:'Deal name'}]}],
+fm:[{g:'HubSpot Deal Properties'},{s:{y:'HubSpot',f:'dealstage'},tp:'enum',tx:'Filter gate',d:{y:'Zapier',f:'Filters 3 & 14'},ex:'172201830',st:'1→3,14'},{s:{y:'HubSpot',f:'hubspotownerid'},tp:'id',tx:'Passed as deal_owner',d:{y:'Ruddr',f:'deal_owner'},ex:'284619753',st:'1→12'},{s:{y:'HubSpot',f:'hs_primary_associated_company'},tp:'id',tx:'Company lookup + Intacct',d:{y:'Sage Intacct',f:'company_id_required'},ex:'19847562301',st:'1→11→15'},{s:{y:'HubSpot',f:'hs_num_of_associated_line_items'},tp:'number',tx:'Filter >0',d:{y:'Zapier',f:'Filter 2'},ex:'3',st:'1→2'},{s:{y:'HubSpot',f:'project_start_date'},tp:'date',tx:'Epoch→YYYY-MM-DD',d:{y:'Sage Intacct',f:'deal_start_date'},ex:'2025-10-01',st:'1→4→16'},{s:{y:'HubSpot',f:'project_end_date'},tp:'date',tx:'Epoch→YYYY-MM-DD',d:{y:'Sage Intacct',f:'deal_end_date'},ex:'2026-03-31',st:'1→5→16'},{s:{y:'HubSpot',f:'dealname'},tp:'text',tx:'Direct to Ruddr + Intacct',d:{y:'Ruddr+Intacct',f:'hubspot_deal_name'},ex:'Acme Pharma — Q3 IC',st:'1→13,16'},{s:{y:'HubSpot',f:'hs_object_id'},tp:'id',tx:'To 3 sub-Zaps',d:{y:'Ruddr+Intacct',f:'deal_id'},ex:'28471956302',st:'1→10,13,16'},{g:'HubSpot Contact (7–9)'},{s:{y:'HubSpot',f:'contact.email'},tp:'email',tx:'Association lookup',d:{y:'Ruddr',f:'client_email'},ex:'j.williams@acmepharma.com',st:'9→12'},{s:{y:'HubSpot',f:'contact.name'},tp:'text',tx:'Concatenated',d:{y:'Ruddr',f:'client_name'},ex:'Jennifer Williams',st:'9→12'},{g:'HubSpot Company (11)'},{s:{y:'HubSpot',f:'company.name'},tp:'text',tx:'Company ID lookup',d:{y:'Ruddr',f:'customer_name'},ex:'Acme Pharma, Inc.',st:'11→12'},{s:{y:'HubSpot',f:'company.id'},tp:'id',tx:'For Intacct',d:{y:'Sage Intacct',f:'hubspot_client_id'},ex:'19847562301',st:'11→15'},{g:'Line Items (Sub-Zap 10)'},{s:{y:'HubSpot',f:'line_items (JSON)'},tp:'json',tx:'Sub-Zap structures',d:{y:'Ruddr+Intacct',f:'line_items_data'},ex:'[{sku:"ARC-IC",amt:85000}]',st:'10→13,16'},{g:'Ruddr → Downstream'},{s:{y:'Ruddr',f:'client_id'},tp:'id',tx:'Find/Create output',d:{y:'Ruddr',f:'ruddr_client_id_required'},ex:'CLT-00842',st:'12→13'},{s:{y:'Ruddr',f:'client_code'},tp:'text',tx:'→ Intacct',d:{y:'Sage Intacct',f:'client_code'},ex:'ACME-PHARMA',st:'12→15'},{g:'Intacct → Contract'},{s:{y:'Sage Intacct',f:'customer_key'},tp:'id',tx:'Find/Create',d:{y:'Sage Intacct',f:'intacct_customer_key'},ex:'CUST-7291',st:'15→16'},{s:{y:'Sage Intacct',f:'customer_id'},tp:'id',tx:'Find/Create',d:{y:'Sage Intacct',f:'intacct_customer_id'},ex:'C-00482',st:'15→16'}]},
+
+{id:'z2',name:'Get Line Items',folder:'Finance Automation',role:'sub-zap',triggerApp:'Zapier',destApps:['HubSpot'],parent:'z1',calledBy:'Orchestrator step 10',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Input: <code>deal_id_required</code>'},{n:2,t:'api',a:'HubSpot',nm:'GET Line Items from Deal',dt:'<code>GET /crm/v4/.../associations/line_items?limit=500</code>'},{n:3,t:'code',nm:'Process Line Item Data',dt:'Parses into structured array: id, name, qty, price, hs_sku, timeline_months, etc.'},{n:4,t:'return',nm:'Return line_item_data',dt:'Returns raw_json string.'}],fm:[{s:{y:'Zapier',f:'deal_id_required'},tp:'id',tx:'From parent',d:{y:'HubSpot',f:'API path'},ex:'28471956302',st:'1→2'},{s:{y:'HubSpot',f:'line_items[]'},tp:'json',tx:'Parsed array',d:{y:'Zapier',f:'line_item_data (return)'},ex:'[{id,name,sku,amount}]',st:'2→3→4'}]},
+
+{id:'z3',name:'Find/Create Ruddr Client',folder:'Finance Automation',role:'sub-zap',triggerApp:'Zapier',destApps:['HubSpot','Ruddr'],parent:'z1',calledBy:'Orchestrator step 12',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: deal_owner, customer_name, client_email, client_name'},{n:2,t:'action',a:'HubSpot',nm:'Get Owner by ID',dt:'Owner email for Ruddr member search.'},{n:3,t:'action',a:'Ruddr',nm:'Search Member by Email',dt:'Finds Ruddr member.'},{n:4,t:'action',a:'Ruddr',nm:'Search Client by Name',dt:'Searches for existing client.'},{n:5,t:'path',nm:'Path A: Not Found → Create',dt:'Creates client with name, emails, ownerId.'},{n:6,t:'path',nm:'Path B: Found → Return Existing',dt:'Returns existing ID + code.'},{n:7,t:'return',nm:'Return client_id + client_code',dt:'Returns to parent.'}],fm:[{s:{y:'Zapier',f:'deal_owner'},tp:'id',tx:'Owner → email → member',d:{y:'Ruddr',f:'member search'},ex:'284619753',st:'1→2→3'},{s:{y:'Zapier',f:'customer_name'},tp:'text',tx:'Client search/create',d:{y:'Ruddr',f:'client.name'},ex:'Acme Pharma, Inc.',st:'1→4,5'},{s:{y:'Zapier',f:'client_email'},tp:'email',tx:'Client creation',d:{y:'Ruddr',f:'client.emails[]'},ex:'j.williams@acmepharma.com',st:'1→5'},{s:{y:'HubSpot',f:'owner.email'},tp:'email',tx:'Member lookup',d:{y:'Ruddr',f:'member search key'},ex:'pconroy@beghou.com',st:'2→3'},{s:{y:'Ruddr',f:'client.id'},tp:'id',tx:'Return',d:{y:'Zapier',f:'rudder_client_id'},ex:'CLT-00842',st:'5/6→7'},{s:{y:'Ruddr',f:'client.code'},tp:'text',tx:'Return',d:{y:'Zapier',f:'client_code'},ex:'ACME-PHARMA',st:'5/6→7'}]},
+
+{id:'z4',name:'Create Ruddr Projects',folder:'Finance Automation',role:'sub-zap',triggerApp:'Zapier',destApps:['HubSpot','Ruddr'],parent:'z1',calledBy:'Orchestrator step 13',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: line_items_data, deal_id, deal_name, ruddr_client_id'},{n:2,t:'code',nm:'Parse Line Items',dt:'Splits JSON into loop arrays.'},{n:3,t:'action',a:'HubSpot',nm:'Get Deal',dt:'Deal dates + owner.'},{n:4,t:'action',a:'HubSpot',nm:'Get Owner',dt:'Owner email.'},{n:5,t:'action',a:'Ruddr',nm:'Search Member',dt:'Finds projectAdminId.'},{n:6,t:'loop',nm:'Loop Per Line Item',dt:'Per iteration: calculate dates, map billing, create project.'},{n:'6.1',t:'code',nm:'Calculate End Date + Billing Type',dt:'Timeline calc + SKU→billing map.'},{n:'6.2',t:'filter',nm:'Skip PT / L: SKUs',dt:'Filters pass-through items.'},{n:'6.3',t:'action',a:'Ruddr',nm:'Create Project',dt:'clientId, billingType, projectAdmin, dates, budget.',io:[{f:'clientId',s:'ruddr_client_id'},{f:'billingTypeId',s:'SKU map'},{f:'projectAdminId',s:'Member (5)'}]},{n:'6.4',t:'action',a:'HubSpot',nm:'Update Line Item (writeback)',dt:'Writes <code>ruddr_project_id</code> back.'},{n:'6.5',t:'path',nm:'7 Bucket Paths → Tasks',dt:'3–16 tasks per bucket type. Calls Allocation sub-Zap at last iteration.'},{n:7,t:'return',nm:'Return created=true',dt:''}],fm:[{g:'Inputs → Ruddr'},{s:{y:'Zapier',f:'line_items_data'},tp:'json',tx:'Parsed into loop',d:{y:'Ruddr',f:'project per item'},ex:'[{sku,name,amt}]',st:'1→2→6'},{s:{y:'Zapier',f:'ruddr_client_id'},tp:'id',tx:'Direct',d:{y:'Ruddr',f:'project.clientId'},ex:'CLT-00842',st:'1→6.3'},{s:{y:'HubSpot',f:'deal.dates'},tp:'date',tx:'Base + timeline calc',d:{y:'Ruddr',f:'project.start/end'},ex:'2025-10-01',st:'3→6.1→6.3'},{s:{y:'HubSpot',f:'owner.email'},tp:'email',tx:'→ member → admin',d:{y:'Ruddr',f:'projectAdminId'},ex:'pconroy@beghou.com',st:'4→5→6.3'},{s:{y:'HubSpot',f:'line_item.hs_sku'},tp:'text',tx:'SKU → billing + bucket',d:{y:'Ruddr',f:'billingTypeId + tasks'},ex:'ARC:DE:MT',st:'6.1,6.5'},{g:'Writeback'},{s:{y:'Ruddr',f:'project.code'},tp:'text',tx:'Written to HubSpot',d:{y:'HubSpot',f:'line_item.ruddr_project_id'},ex:'PRJ-4821',st:'6.3→6.4'}]},
+
+{id:'z5',name:'Find/Create Intacct Customer',folder:'Finance Automation',role:'sub-zap',triggerApp:'Zapier',destApps:['HubSpot','Sage Intacct'],parent:'z1',calledBy:'Orchestrator step 15',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: client_code, hubspot_client_id, company_id_required'},{n:2,t:'action',a:'HubSpot',nm:'Get Company by ID',dt:'Gets company name.'},{n:3,t:'action',a:'Sage Intacct',nm:'Search Customer',dt:'By CUSTOMERID = client_code.'},{n:4,t:'path',nm:'Not Found → Create',dt:'Creates with name + client_code as ID.'},{n:5,t:'path',nm:'Found → Return Existing',dt:'Returns CUSTOMERID + RECORDNO.'},{n:6,t:'return',nm:'Return key + ID',dt:''}],fm:[{s:{y:'Zapier',f:'client_code'},tp:'text',tx:'Search key',d:{y:'Sage Intacct',f:'CUSTOMERID'},ex:'ACME-PHARMA',st:'1→3'},{s:{y:'HubSpot',f:'company.name'},tp:'text',tx:'Customer name',d:{y:'Sage Intacct',f:'customer.NAME'},ex:'Acme Pharma, Inc.',st:'2→4'},{s:{y:'Sage Intacct',f:'customer.key'},tp:'id',tx:'Return',d:{y:'Zapier',f:'sagecustomerkey'},ex:'CUST-7291',st:'4/5→6'},{s:{y:'Sage Intacct',f:'customer.ID'},tp:'id',tx:'Return',d:{y:'Zapier',f:'sagecustomerid'},ex:'C-00482',st:'4/5→6'}]},
+
+{id:'z6',name:'Create Intacct Contract + Lines',folder:'Finance Automation',role:'sub-zap',triggerApp:'Zapier',destApps:['HubSpot','Ruddr','Sage Intacct'],parent:'z1',calledBy:'Orchestrator step 16',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'8 inputs: line items, payment term, customer key/id, dates, deal id/name.'},{n:2,t:'code',nm:'Default Payment Term',dt:'Net 30 if null.'},{n:3,t:'formatter',nm:'Format Today',dt:'YYYY-MM-DD for CREATED_ON.'},{n:4,t:'action',a:'HubSpot',nm:'Get Deal',dt:'Additional properties.'},{n:5,t:'code',nm:'Expand + Calculate Billing',dt:'Billing templates, frequencies, revenue templates.'},{n:6,t:'action',a:'Sage Intacct',nm:'Find/Create Contract',dt:'Contract header.',io:[{f:'name',s:'deal_name'},{f:'contract_id',s:'deal_id'},{f:'customer_key',s:'intacct_customer_key'},{f:'paymentTerm',s:'Net 30 default'},{f:'dates',s:'Input dates'}]},{n:7,t:'loop',nm:'Loop Per Line Item',dt:'Per iteration:'},{n:'7.1',t:'action',a:'HubSpot',nm:'Get Line Item',dt:'hs_sku, timeline, ruddr_project_id.'},{n:'7.2',t:'code',nm:'Calculate Cost/Month',dt:'Total ÷ timeline.'},{n:'7.3',t:'action',a:'Sage Intacct',nm:'Find Item by SKU',dt:'Intacct item lookup.'},{n:'7.4',t:'action',a:'Ruddr',nm:'List Projects',dt:'Find Ruddr project.'},{n:'7.5',t:'action',a:'Sage Intacct',nm:'Find/Create Project',dt:'Linked to Ruddr + contract.',io:[{f:'projectId',s:'Ruddr code'},{f:'customerKey',s:'intacct_customer_key'},{f:'nsp_RUDDR_PROJECT_ID',s:'Ruddr ID'},{f:'nsp_HUBSPOT_ID',s:'deal_id'}]},{n:'7.6',t:'action',a:'Sage Intacct',nm:'Create Contract Line',dt:'Item, project, billing, revenue.',io:[{f:'contract_key',s:'Contract (6)'},{f:'item_key',s:'Item (7.3)'},{f:'project_key',s:'Project (7.5)'},{f:'billing',s:'Templates + cost/mo'},{f:'nsp_HUBSPOT_LINE_ID',s:'Line item ID'}]},{n:'7.7',t:'path',nm:'PF:TM → Billable / Other → Non-Billable',dt:'Calls task sub-Zaps.'},{n:8,t:'return',nm:'Return finished=true',dt:''}],fm:[{g:'Contract Header'},{s:{y:'Zapier',f:'hubspot_deal_name'},tp:'text',tx:'Contract name',d:{y:'Sage Intacct',f:'contract.name'},ex:'Acme Pharma — Q3 IC',st:'1→6'},{s:{y:'Zapier',f:'hubspot_deal_id'},tp:'id',tx:'Contract ID + custom field',d:{y:'Sage Intacct',f:'contract.contract_id'},ex:'28471956302',st:'1→6'},{s:{y:'Zapier',f:'intacct_customer_key'},tp:'id',tx:'Customer ref',d:{y:'Sage Intacct',f:'contract.customer_key'},ex:'CUST-7291',st:'1→6'},{s:{y:'Zapier',f:'deal dates'},tp:'date',tx:'Contract dates',d:{y:'Sage Intacct',f:'contract.start/endDate'},ex:'2025-10-01',st:'1→6'},{s:{y:'Zapier',f:'payment_term'},tp:'text',tx:'Default Net 30',d:{y:'Sage Intacct',f:'contract.paymentTerm'},ex:'24|Net 30',st:'1→2→6'},{g:'Per Line Item'},{s:{y:'HubSpot',f:'line_item.hs_sku'},tp:'text',tx:'Intacct item lookup',d:{y:'Sage Intacct',f:'item (ITEMID)'},ex:'ARC:IC:MT',st:'7.1→7.3'},{s:{y:'HubSpot',f:'timeline_months'},tp:'number',tx:'Cost calc',d:{y:'Sage Intacct',f:'billing.flatFixedAmount'},ex:'6',st:'7.1→7.2→7.6'},{s:{y:'HubSpot',f:'ruddr_project_id'},tp:'text',tx:'Ruddr→Intacct linking',d:{y:'Sage Intacct',f:'project.nsp_RUDDR_PROJECT_ID'},ex:'PRJ-4821',st:'7.1→7.4→7.5'},{s:{y:'Ruddr',f:'project.code'},tp:'text',tx:'Intacct projectId',d:{y:'Sage Intacct',f:'project.projectId'},ex:'PRJ-4821',st:'7.4→7.5'},{s:{y:'Sage Intacct',f:'contract.key'},tp:'id',tx:'Contract line ref',d:{y:'Sage Intacct',f:'contractline.contract_key'},ex:'CTR-9182',st:'6→7.6'},{s:{y:'Sage Intacct',f:'item.key'},tp:'id',tx:'Item ref',d:{y:'Sage Intacct',f:'contractline.item_key'},ex:'ITEM-482',st:'7.3→7.6'},{s:{y:'Sage Intacct',f:'project.key'},tp:'id',tx:'Project ref',d:{y:'Sage Intacct',f:'contractline.project_key'},ex:'PROJ-881',st:'7.5→7.6'}]},
+
+{id:'z7',name:'Find/Create Contact Intacct',folder:'Finance Automation',role:'sub-zap',triggerApp:'Zapier',destApps:['HubSpot','Sage Intacct'],parent:null,calledBy:'Standalone',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Input: associated_contact_id'},{n:2,t:'formatter',nm:'Pick First ID',dt:'Selects first from list.'},{n:3,t:'action',a:'HubSpot',nm:'Get Contact by ID',dt:'Full contact details.'},{n:4,t:'action',a:'Sage Intacct',nm:'Find Contact by Email',dt:'Searches active contacts.'},{n:5,t:'path',nm:'Found → Return Key',dt:'Returns sage_contact_key.'},{n:6,t:'path',nm:'Not Found → Create',dt:'All fields: name, email, phone, mobile, fax, address, website.',io:[{f:'contactName',s:'firstname+lastname'},{f:'primaryEmailAddress',s:'email'},{f:'primaryPhoneNo',s:'phone'},{f:'address fields',s:'HubSpot address'}]},{n:7,t:'return',nm:'Return sage_contact_key',dt:''}],fm:[{s:{y:'Zapier',f:'associated_contact_id'},tp:'id',tx:'HubSpot lookup',d:{y:'HubSpot',f:'contact ID'},ex:'48291034',st:'1→3'},{s:{y:'HubSpot',f:'contact.email'},tp:'email',tx:'Search + create',d:{y:'Sage Intacct',f:'primaryEmailAddress'},ex:'j.williams@acmepharma.com',st:'3→4,6'},{s:{y:'HubSpot',f:'contact.firstname'},tp:'text',tx:'Contact name',d:{y:'Sage Intacct',f:'firstName'},ex:'Jennifer',st:'3→6'},{s:{y:'HubSpot',f:'contact.lastname'},tp:'text',tx:'Contact name',d:{y:'Sage Intacct',f:'lastName'},ex:'Williams',st:'3→6'},{s:{y:'HubSpot',f:'contact.phone'},tp:'text',tx:'Direct',d:{y:'Sage Intacct',f:'primaryPhoneNo'},ex:'617-555-1234',st:'3→6'},{s:{y:'HubSpot',f:'contact.address'},tp:'text',tx:'Full address',d:{y:'Sage Intacct',f:'address fields'},ex:'100 Main St, Boston',st:'3→6'}]},
+
+{id:'z8',name:'Create Intacct Billable Tasks',folder:'Finance Automation',role:'nested',triggerApp:'Zapier',destApps:['Sage Intacct'],parent:'z6',calledBy:'Contract Lines (PF:TM SKUs)',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: project_key, sku, dates'},{n:2,t:'action',a:'Sage Intacct',nm:'Create Tasks Bulk (×3)',dt:'16 billable tasks across 3 groups: PM, meetings, analytics, review, documentation, etc.'},{n:3,t:'return',nm:'Return',dt:''}],fm:[{s:{y:'Zapier',f:'project_key'},tp:'id',tx:'Target project',d:{y:'Sage Intacct',f:'task.projectKey'},ex:'PROJ-881',st:'1→2'},{s:{y:'Zapier',f:'project dates'},tp:'date',tx:'Task dates',d:{y:'Sage Intacct',f:'task.plannedStart/End'},ex:'2025-10-01',st:'1→2'}]},
+
+{id:'z9',name:'Create Intacct Non-Billable Tasks',folder:'Finance Automation',role:'nested',triggerApp:'Zapier',destApps:['Ruddr','Sage Intacct'],parent:'z6',calledBy:'Contract Lines (non-PF:TM)',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: ruddr_project_id, project_key, sku, dates'},{n:2,t:'action',a:'Ruddr',nm:'List Tasks by Project',dt:'Gets existing Ruddr tasks for linking.'},{n:3,t:'code',nm:'Bucket Resolution',dt:'SKU → 7 bucket types.'},{n:4,t:'path',nm:'7 Paths → Create Tasks',dt:'3–6 non-billable tasks per bucket with Ruddr task ID linking.'},{n:5,t:'return',nm:'Return',dt:''}],fm:[{s:{y:'Zapier',f:'ruddr_project_id'},tp:'id',tx:'Task lookup',d:{y:'Ruddr',f:'task list'},ex:'PRJ-4821',st:'1→2'},{s:{y:'Zapier',f:'project_key'},tp:'id',tx:'Target project',d:{y:'Sage Intacct',f:'task.projectKey'},ex:'PROJ-881',st:'1→4'},{s:{y:'Zapier',f:'sku'},tp:'text',tx:'Bucket resolution',d:{y:'Sage Intacct',f:'task template'},ex:'ARC:DE:MT',st:'1→3→4'},{s:{y:'Ruddr',f:'task.ids'},tp:'id',tx:'Linked as custom field',d:{y:'Sage Intacct',f:'nsp_RUDDRTASKIDS'},ex:'TSK-119',st:'2→4'}]},
+
+{id:'z10',name:'Find/Create Allocation Line Item',folder:'Finance Automation',role:'nested',triggerApp:'Zapier',destApps:['HubSpot','Ruddr'],parent:'z4',calledBy:'Ruddr Projects (per bucket)',steps:[{n:1,t:'trigger',a:'Zapier',nm:'Start Sub-Zap',dt:'Inputs: ruddr_project_admin, billing_type, ruddr_client_id, deal_id'},{n:2,t:'action',a:'HubSpot',nm:'Get Deal',dt:'Gets dates + ruddr_project_code.'},{n:3,t:'path',nm:'No Project → Create Allocation',dt:'Creates "{dealname} - Allocations" project + task in Ruddr.',io:[{f:'clientId',s:'ruddr_client_id'},{f:'projectAdminId',s:'ruddr_project_admin'}]},{n:4,t:'action',a:'HubSpot',nm:'Update Deal (writeback)',dt:'Writes ruddr_project_code.'},{n:5,t:'path',nm:'Exists → Skip',dt:''},{n:6,t:'return',nm:'Return',dt:''}],fm:[{s:{y:'Zapier',f:'deal_id'},tp:'id',tx:'HubSpot lookup',d:{y:'HubSpot',f:'deal ID'},ex:'28471956302',st:'1→2'},{s:{y:'Zapier',f:'ruddr_client_id'},tp:'id',tx:'Project client',d:{y:'Ruddr',f:'project.clientId'},ex:'CLT-00842',st:'1→3'},{s:{y:'HubSpot',f:'dealname'},tp:'text',tx:'+ "- Allocations"',d:{y:'Ruddr',f:'project.name'},ex:'Acme Pharma — Allocations',st:'2→3'},{s:{y:'Ruddr',f:'project.code'},tp:'text',tx:'Writeback',d:{y:'HubSpot',f:'deal.ruddr_project_code'},ex:'PRJ-4822',st:'3→4'}]}
+];
+
+/* ============================================================
+   COMPUTED STATS
+   ============================================================ */
+var STATS = (function(){
+  var sys = new Set(), flds=0, hrs=0, runs=0, steps=0, orch=0, subs=0, nest=0;
+  Z.forEach(function(z){
+    if(z.triggerApp&&z.triggerApp!=='Zapier') sys.add(z.triggerApp);
+    (z.destApps||[]).forEach(function(a){if(a!=='Zapier')sys.add(a);});
+    flds+=cf(z); hrs+=z.hrs||0; runs+=z.runs||0; steps+=(z.steps||[]).length;
+    if(z.role==='orchestrator')orch++; else if(z.role==='sub-zap')subs++; else nest++;
+  });
+  return {sys:sys,flds:flds,hrs:hrs,runs:runs,steps:steps,orch:orch,subs:subs,nest:nest};
+})();
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+document.getElementById('nav-date').textContent = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+document.getElementById('sc-zaps').textContent = Z.length;
+document.getElementById('sc-fields').textContent = STATS.flds;
+
+document.querySelectorAll('.sidebar-item').forEach(function(item){
+  item.addEventListener('click', function(){
+    document.querySelectorAll('.sidebar-item').forEach(function(i){i.classList.remove('active');});
+    document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+    item.classList.add('active');
+    document.getElementById('v-'+item.dataset.view).classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+document.getElementById('burger').addEventListener('click', function(){
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+/* ============================================================
+   VIEW: DASHBOARD
+   ============================================================ */
+(function(){
+  // KPI tiles
+  var tiles = [
+    {l:'Total Zaps',v:Z.length,d:STATS.orch+' orch · '+STATS.subs+' sub · '+STATS.nest+' nested',dp:true},
+    {l:'Execution Steps',v:STATS.steps,d:'Across all workflows',dp:false},
+    {l:'Systems Integrated',v:STATS.sys.size,d:Array.from(STATS.sys).join(' · '),dp:false},
+    {l:'Fields Mapped',v:STATS.flds,d:'Cross-system boundaries',dp:false},
+    {l:'Hours Saved/Mo',v:'~'+STATS.hrs,d:'≈ '+STATS.runs+' runs/mo',dp:true}
+  ];
+  document.getElementById('kpi-row').innerHTML = tiles.map(function(t){
+    return '<div class="kpi-tile"><div class="kpi-label">'+t.l+'</div><div class="kpi-value">'+t.v+'</div>'+
+      (t.dp?'<div class="kpi-delta positive">Production</div>':'')+
+      '<div class="kpi-sub">'+t.d+'</div></div>';
+  }).join('');
+
+  // Narrative
+  document.getElementById('narrative-card').innerHTML = '<div class="card-title">Executive Summary</div>'+
+    '<div style="font-size:14px;line-height:1.7">When a deal reaches "Closing" or "Closed Won" in HubSpot, a single Zapier orchestrator triggers a cascade of <strong style="color:var(--navy)">'+Z.length+' interconnected automations</strong> spanning <strong style="color:var(--navy)">'+STATS.steps+' execution steps</strong>. These workflows move <strong style="color:var(--navy)">'+STATS.flds+' fields</strong> across <strong style="color:var(--navy)">'+STATS.sys.size+' systems</strong> ('+Array.from(STATS.sys).join(', ')+'), creating client/customer records, projects with role-specific task templates, and contracts with per-line billing — all without manual entry. Estimated savings: <strong style="color:var(--navy)">~'+STATS.hrs+' hours/month</strong>.</div>';
+
+  // Charts
+  var grid = document.getElementById('chart-grid');
+  // Donut: Zap roles
+  grid.innerHTML = '<div class="card chart-card"><div class="card-title">Zap Types</div><canvas id="ch-roles"></canvas></div>'+
+    '<div class="card chart-card"><div class="card-title">Steps Per Zap</div><canvas id="ch-steps"></canvas></div>'+
+    '<div class="card chart-card"><div class="card-title">Fields Per Zap</div><canvas id="ch-fields"></canvas></div>'+
+    '<div class="card chart-card"><div class="card-title">Fields by Destination</div><canvas id="ch-dest"></canvas></div>';
+
+  setTimeout(function(){
+    drawDonutChart(document.getElementById('ch-roles'), {
+      title:'', segments:[
+        {label:'Orchestrator',value:STATS.orch,color:'#E60F65'},
+        {label:'Sub-Zap',value:STATS.subs,color:'#020434'},
+        {label:'Nested',value:STATS.nest,color:'#6C7BB5'}
+      ]
+    });
+    drawBarChart(document.getElementById('ch-steps'), {
+      title:'', labels:Z.map(function(z){return z.name.split('→')[0].split('Create ')[1]||z.name.substring(0,14);}),
+      values:Z.map(function(z){return (z.steps||[]).length;}),
+      colors:Z.map(function(z){return z.role==='orchestrator'?'#E60F65':z.role==='sub-zap'?'#020434':'#6C7BB5';})
+    });
+    drawHBar(document.getElementById('ch-fields'), {
+      title:'', labels:Z.map(function(z){return z.name.length>22?z.name.substring(0,20)+'…':z.name;}),
+      values:Z.map(function(z){return cf(z);}), color:'#E60F65'
+    });
+    // Destination donut
+    var destCounts = {};
+    Z.forEach(function(z){z.fm.forEach(function(f){if(f.d){var sys=f.d.y;if(sys.indexOf('+')>-1){sys.split('+').forEach(function(s){destCounts[s.trim()]=(destCounts[s.trim()]||0)+1;});}else{destCounts[sys]=(destCounts[sys]||0)+1;}}});});
+    var destSegs = Object.keys(destCounts).map(function(k,i){
+      var cols = ['#E60F65','#020434','#6C7BB5','#A8B0D4','#D8DCE8'];
+      return {label:k,value:destCounts[k],color:cols[i%cols.length]};
+    });
+    drawDonutChart(document.getElementById('ch-dest'), {title:'',segments:destSegs});
+  }, 100);
+})();
+
+/* ============================================================
+   VIEW: ARCHITECTURE
+   ============================================================ */
+(function(){
+  function node(z,depth){
+    var badge=z.role==='orchestrator'?'badge-accent':z.role==='sub-zap'?'badge-zap':'badge-info';
+    var label=z.role==='orchestrator'?'Orchestrator':z.role==='sub-zap'?'Sub-Zap':'Nested';
+    var children=Z.filter(function(c){return c.parent===z.id;});
+    return '<div class="'+(depth===0?'tree-root':'tree-node')+'" onclick="openModal(\''+z.id+'\')">'+ 
+      '<strong style="color:var(--navy)">'+z.name+'</strong> '+
+      '<span class="badge '+badge+'">'+label+'</span> '+
+      '<span style="font-size:11px;color:var(--text-light)">'+(z.steps||[]).length+' steps · '+cf(z)+' fields'+(z.calledBy?' · '+z.calledBy:'')+'</span>'+
+      '</div>'+(children.length?'<div class="tree-children">'+children.map(function(c){return node(c,depth+1);}).join('')+'</div>':'');
+  }
+  document.getElementById('tree-container').innerHTML = '<div class="tree">'+Z.filter(function(z){return !z.parent;}).map(function(r){return node(r,0);}).join('')+'</div>';
+
+  document.getElementById('rec-grid').innerHTML =
+    '<div class="rec-col" style="border-color:var(--rd)"><div class="rec-col-title" style="color:var(--rd)">Ruddr</div>'+
+    '<div class="rec-item"><strong>Client</strong> — find or create (1/deal)</div>'+
+    '<div class="rec-item"><strong>Project</strong> — 1 per line item</div>'+
+    '<div class="rec-item"><strong>Tasks</strong> — 3–16 per project by SKU bucket</div>'+
+    '<div class="rec-item"><strong>Allocation Project</strong> — 1 per deal</div></div>'+
+    '<div class="rec-col" style="border-color:var(--si)"><div class="rec-col-title" style="color:#1a9b55">Sage Intacct</div>'+
+    '<div class="rec-item"><strong>Customer</strong> — find or create (1/deal)</div>'+
+    '<div class="rec-item"><strong>Contract</strong> — 1 per deal (draft, termed, monthly)</div>'+
+    '<div class="rec-item"><strong>Contract Lines</strong> — 1 per line item</div>'+
+    '<div class="rec-item"><strong>Project</strong> — 1 per line item (linked to Ruddr + contract)</div>'+
+    '<div class="rec-item"><strong>Tasks</strong> — 16 billable (PF:TM) or 3–6 non-billable</div>'+
+    '<div class="rec-item"><strong>Contact</strong> — find or create (standalone)</div></div>'+
+    '<div class="rec-col" style="border-color:var(--hs)"><div class="rec-col-title" style="color:#e05a3a">HubSpot (Writebacks)</div>'+
+    '<div class="rec-item"><strong>Line Item</strong> — ruddr_project_id per line</div>'+
+    '<div class="rec-item"><strong>Deal</strong> — ruddr_project_code for allocations</div></div>';
+})();
+
+/* ============================================================
+   VIEW: SYSTEM MAP
+   ============================================================ */
+(function(){
+  var svg=document.getElementById('smap');
+  var W=1100,H=380,bW=160,bH=60;
+  var pos={'HubSpot':{x:150,y:H/2},'Zapier':{x:W/2,y:H/2},'Ruddr':{x:W-170,y:H/2-70},'Sage Intacct':{x:W-170,y:H/2+70}};
+  function mkLine(x1,y1,x2,y2,col,lbl,dash){
+    var dx=x2-x1,dy=y2-y1,ln=Math.sqrt(dx*dx+dy*dy),tr=bW/2+14;
+    var sx=x1+dx/ln*tr,sy=y1+dy/ln*tr,ex=x2-dx/ln*tr,ey=y2-dy/ln*tr;
+    var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',sx);l.setAttribute('y1',sy);l.setAttribute('x2',ex);l.setAttribute('y2',ey);
+    l.setAttribute('stroke',col);l.setAttribute('stroke-width','2.5');l.setAttribute('marker-end','url(#ah)');
+    if(dash)l.setAttribute('stroke-dasharray','6,4');
+    svg.appendChild(l);
+    if(lbl){var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',(sx+ex)/2);t.setAttribute('y',(sy+ey)/2-10);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','11');t.setAttribute('fill','#8B91AA');t.setAttribute('font-family','system-ui,sans-serif');
+    t.textContent=lbl;svg.appendChild(t);}
+  }
+  mkLine(pos.HubSpot.x,pos.HubSpot.y,pos.Zapier.x,pos.Zapier.y,'#FF7A59','Deal stage change');
+  mkLine(pos.Zapier.x,pos.Zapier.y,pos.Ruddr.x,pos.Ruddr.y,'#4B7BEC','Client + Project + Tasks');
+  mkLine(pos.Zapier.x,pos.Zapier.y,pos['Sage Intacct'].x,pos['Sage Intacct'].y,'#2ECC71','Customer + Contract + Lines');
+  mkLine(pos.Ruddr.x,pos.Ruddr.y,pos['Sage Intacct'].x,pos['Sage Intacct'].y,'#8B91AA','project code linking');
+  mkLine(pos.Zapier.x-60,pos.Zapier.y-40,pos.HubSpot.x+bW/2+14,pos.HubSpot.y-20,'#FF7A59','writebacks',true);
+
+  var boxData={'HubSpot':{c:'#FF7A59',s:'Source of truth'},'Zapier':{c:'#FF4F00',s:'10 Zaps · '+STATS.steps+' steps'},'Ruddr':{c:'#4B7BEC',s:'Project delivery'},'Sage Intacct':{c:'#2ECC71',s:'Finance & billing'}};
+  Object.keys(pos).forEach(function(nm){
+    var p=pos[nm],d=boxData[nm],isZ=nm==='Zapier';
+    var r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',p.x-bW/2);r.setAttribute('y',p.y-bH/2);r.setAttribute('width',bW);r.setAttribute('height',bH);
+    r.setAttribute('rx',isZ?14:8);r.setAttribute('fill',isZ?'#FF4F00':'#FFF');
+    r.setAttribute('stroke',d.c);r.setAttribute('stroke-width',isZ?0:2);
+    r.style.filter='drop-shadow(0 2px 6px rgba(0,0,0,.1))';svg.appendChild(r);
+    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',p.x);t.setAttribute('y',p.y-3);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','14');t.setAttribute('font-weight','700');
+    t.setAttribute('fill',isZ?'#FFF':d.c);t.setAttribute('font-family','system-ui,sans-serif');
+    t.textContent=isZ?'⚡ Zapier':nm;svg.appendChild(t);
+    var s=document.createElementNS('http://www.w3.org/2000/svg','text');
+    s.setAttribute('x',p.x);s.setAttribute('y',p.y+16);s.setAttribute('text-anchor','middle');
+    s.setAttribute('font-size','11');s.setAttribute('fill',isZ?'rgba(255,255,255,.8)':'#8B91AA');
+    s.setAttribute('font-family','system-ui,sans-serif');s.textContent=d.s;svg.appendChild(s);
+  });
+})();
+
+/* ============================================================
+   VIEW: ZAP INVENTORY
+   ============================================================ */
+var curRole='All';
+function renderZaps(){
+  var roles=['All','orchestrator','sub-zap','nested'];
+  var labels={'All':'All ('+Z.length+')','orchestrator':'Orchestrator ('+STATS.orch+')','sub-zap':'Sub-Zaps ('+STATS.subs+')','nested':'Nested ('+STATS.nest+')'};
+  document.getElementById('zap-chips').innerHTML=roles.map(function(r){
+    return '<div class="chip '+(r===curRole?'on':'')+'" data-r="'+r+'">'+labels[r]+'</div>';
+  }).join('');
+  document.querySelectorAll('#zap-chips .chip').forEach(function(c){
+    c.addEventListener('click',function(){curRole=c.dataset.r;renderZaps();});
+  });
+  var list=curRole==='All'?Z:Z.filter(function(z){return z.role===curRole;});
+  document.getElementById('zap-grid').innerHTML=list.map(function(z){
+    var apps=[z.triggerApp].concat(z.destApps||[]);
+    var u=[];apps.forEach(function(a){if(u.indexOf(a)<0)u.push(a);});
+    var badge=z.role==='orchestrator'?'badge-accent':z.role==='sub-zap'?'badge-zap':'badge-info';
+    var label=z.role==='orchestrator'?'Orchestrator':z.role==='sub-zap'?'Sub-Zap':'Nested';
+    return '<div class="card zap-card" data-id="'+z.id+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div>'+
+      '<div class="zap-name">'+z.name+'</div><div class="zap-meta">'+(z.calledBy||z.folder)+'</div></div>'+
+      '<span class="badge '+badge+'">'+label+'</span></div>'+
+      '<div class="zap-flow">'+u.map(function(a,i){return (i?'<span class="flow-arrow">→</span>':'')+
+        '<span class="zap-app '+acls(a)+'">'+a+'</span>';}).join('')+'</div>'+
+      (z.replace?'<div class="zap-desc">'+z.replace.substring(0,130)+(z.replace.length>130?'…':'')+'</div>':'')+
+      '<div class="zap-footer"><span><strong style="color:var(--navy)">'+cf(z)+'</strong> fields · '+(z.steps||[]).length+' steps</span>'+
+      (z.hrs?'<span style="color:var(--success);font-weight:600">~'+z.hrs+' hrs/mo</span>':'')+'</div></div>';
+  }).join('');
+  document.querySelectorAll('.zap-card').forEach(function(c){c.addEventListener('click',function(){openModal(c.dataset.id);});});
+}
+renderZaps();
+
+/* ============================================================
+   VIEW: FIELD EXPLORER (all fields, all Zaps)
+   ============================================================ */
+(function(){
+  var tbl = document.getElementById('global-field-table');
+  var rows = '';
+  Z.forEach(function(z){
+    rows += '<tr class="group-row"><td colspan="8">'+z.name+' ('+z.role+')</td></tr>';
+    z.fm.forEach(function(f){
+      if(f.g&&!f.s){rows+='<tr class="group-row" style="background:var(--text-mid)"><td colspan="8" style="font-size:9px;padding:4px 12px">'+f.g+'</td></tr>';return;}
+      if(!f.s)return;
+      rows+='<tr><td><strong>'+f.s.y+'</strong></td><td><span class="pill pill-sm">'+f.s.f+'</span></td>'+
+        '<td><span style="font-size:10px;color:var(--text-light);text-transform:uppercase">'+f.tp+'</span></td>'+
+        '<td><span style="font-size:11px;color:var(--text-mid);font-style:italic">'+f.tx+'</span></td>'+
+        '<td><strong>'+f.d.y+'</strong></td><td><span class="pill pill-sm">'+f.d.f+'</span></td>'+
+        '<td><span class="pill pill-sm" style="font-size:10px">'+f.ex+'</span></td>'+
+        '<td><span style="font-size:9px;color:var(--text-light);font-family:monospace">'+f.st+'</span></td></tr>';
+    });
+  });
+  tbl.innerHTML = '<thead><tr><th>Source</th><th>Field</th><th>Type</th><th>Transform</th><th>Dest</th><th>Field</th><th>Example</th><th>Steps</th></tr></thead><tbody>'+rows+'</tbody>';
+  document.getElementById('global-field-search').addEventListener('input',function(e){
+    var q=e.target.value.toLowerCase();
+    tbl.querySelectorAll('tbody tr').forEach(function(r){
+      if(r.classList.contains('group-row')){r.style.display=q?'none':'';return;}
+      r.style.display=r.textContent.toLowerCase().indexOf(q)>=0?'':'none';
+    });
+  });
+})();
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal(id){
+  var z=Z.find(function(x){return x.id===id;});
+  if(!z)return;
+  var fc=cf(z);
+  document.getElementById('m-title').textContent=z.name;
+  document.getElementById('m-sub').textContent=(z.calledBy||z.folder)+' · '+(z.steps||[]).length+' steps · '+fc+' fields';
+  document.getElementById('m-tabs').innerHTML=
+    '<div class="modal-tab on" data-t="steps">Steps ('+(z.steps||[]).length+')</div>'+
+    '<div class="modal-tab" data-t="fields">Fields ('+fc+')</div>';
+  document.getElementById('m-body').innerHTML=
+    '<div class="mtc on" id="mt-steps">'+bldSteps(z)+'</div>'+
+    '<div class="mtc" id="mt-fields">'+bldFields(z)+'</div>';
+  document.querySelectorAll('.modal-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('.modal-tab').forEach(function(t){t.classList.remove('on');});
+      document.querySelectorAll('.mtc').forEach(function(c){c.classList.remove('on');});
+      tab.classList.add('on');document.getElementById('mt-'+tab.dataset.t).classList.add('on');
+    });
+  });
+  var si=document.getElementById('m-fsr');
+  if(si)si.addEventListener('input',function(e){
+    var q=e.target.value.toLowerCase();
+    document.querySelectorAll('#m-ft tbody tr').forEach(function(r){
+      if(r.classList.contains('group-row')){r.style.display=q?'none':'';return;}
+      r.style.display=r.textContent.toLowerCase().indexOf(q)>=0?'':'none';
+    });
+  });
+  document.getElementById('modal-bg').classList.add('open');
+}
+function bldSteps(z){
+  if(!z.steps||!z.steps.length)return '<div style="color:var(--text-mid)">No step data.</div>';
+  var appColors={HubSpot:'rgba(255,122,89,.1)',Ruddr:'rgba(75,123,236,.1)','Sage Intacct':'rgba(46,204,113,.1)',Zapier:'rgba(255,79,0,.1)'};
+  var appText={HubSpot:'#e05a3a',Ruddr:'#4B7BEC','Sage Intacct':'#1a9b55',Zapier:'#FF4F00'};
+  return '<div class="pipe">'+z.steps.map(function(s){
+    var html='<div class="stp-dt">'+(s.dt||'')+'</div>';
+    if(s.tags)html+='<div class="stp-tags">'+s.tags.map(function(t){return '<span class="stp-tag">'+t+'</span>';}).join('')+'</div>';
+    if(s.io)html+='<div class="stp-io">'+s.io.map(function(i){return '<div class="stp-ior">→ <strong>'+i.f+'</strong> ← '+i.s+'</div>';}).join('')+'</div>';
+    if(s.sz)html+='<div style="margin-top:4px;color:var(--zp);font-weight:600;font-size:11px">⚡ '+s.sz+'</div>';
+    if(s.note)html+='<div class="note-box"><strong>Note:</strong> '+s.note+'</div>';
+    return '<div class="stp"><div class="stp-num">'+s.n+'</div><div class="stp-dot sd-'+s.t+'"></div>'+
+      '<div class="stp-hd"><span class="badge badge-'+(s.t==='subzap'?'zap':s.t==='trigger'?'accent':s.t==='filter'?'warning':s.t==='action'?'info':s.t==='return'?'success':'neutral')+'">'+s.t+'</span>'+
+      (s.a?'<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+(appColors[s.a]||'var(--lavender)')+';color:'+(appText[s.a]||'var(--navy)')+'">'+s.a+'</span>':'')+
+      '<span class="stp-nm">'+s.nm+'</span></div>'+html+'</div>';
+  }).join('')+'</div>';
+}
+function bldFields(z){
+  var rows='';
+  z.fm.forEach(function(f){
+    if(f.g&&!f.s){rows+='<tr class="group-row"><td colspan="8">'+f.g+'</td></tr>';return;}
+    if(!f.s)return;
+    rows+='<tr><td><strong>'+f.s.y+'</strong></td><td><span class="pill pill-sm">'+f.s.f+'</span></td>'+
+      '<td><span style="font-size:10px;color:var(--text-light);text-transform:uppercase">'+f.tp+'</span></td>'+
+      '<td><span style="font-size:11px;color:var(--text-mid);font-style:italic">'+f.tx+'</span></td>'+
+      '<td><strong>'+f.d.y+'</strong></td><td><span class="pill pill-sm">'+f.d.f+'</span></td>'+
+      '<td><span class="pill pill-sm" style="font-size:10px">'+f.ex+'</span></td>'+
+      '<td><span style="font-size:9px;color:var(--text-light);font-family:monospace">'+f.st+'</span></td></tr>';
+  });
+  return '<input class="dt-search" id="m-fsr" placeholder="Search fields…"/>'+
+    '<div class="dt-wrap"><table class="dt" id="m-ft"><thead><tr><th>Source</th><th>Field</th><th>Type</th><th>Transform</th><th>Dest</th><th>Field</th><th>Example</th><th>Steps</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+document.getElementById('m-close').addEventListener('click',function(){document.getElementById('modal-bg').classList.remove('open');});
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target.id==='modal-bg')document.getElementById('modal-bg').classList.remove('open');});
+</script>
+</body>
+</html>
